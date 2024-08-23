@@ -67,6 +67,7 @@ public class Product {
         return price * amt / quantity;
     }
 
+    @Override
     public String toString() {
         return "ID: " + id + "\nName: " + name + "\nBrand: " + brand +
                 "\nPrice: " + price + "\nQuantity: " + quantity;
