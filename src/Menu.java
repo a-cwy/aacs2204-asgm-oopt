@@ -4,10 +4,10 @@ public class Menu {
     private final String header;
     private final String[] options;
 
-//    public Menu() {
-//        this.header = "";
-//        this.options = new String[0];
-//    }
+    public Menu() {
+        this.header = "";
+        this.options = new String[0];
+    }
 
     public Menu(String header, String[] optionsArr) {
         this.header = header;
@@ -53,4 +53,5 @@ public class Menu {
     public String[] getOptions() {
         return options;
     }
+
 }

@@ -1,8 +1,11 @@
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fileHandler.FileHandler;
+import init.Init;
 
 public class Main {
     public static void main(String[] args) {
+        Init.run();
+
         Menu mainMenu = new Menu("Main Menu", new String[]{"Login", "Register", "Write JSON", "Read JSON"});
 
         int choice = -1;
