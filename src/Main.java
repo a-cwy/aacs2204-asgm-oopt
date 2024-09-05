@@ -1,17 +1,32 @@
-import java.util.ArrayList;
-import java.util.Arrays;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import fileHandler.FileHandler;
 
 public class Main {
     public static void main(String[] args) {
-        String mainMenuHeader = "Main Menu";
-        ArrayList<String> mmo = new ArrayList<>(Arrays.asList("Login", "Register"));
-        Menu mainMenu = new Menu(mainMenuHeader, mmo);
+        Menu mainMenu = new Menu("Main Menu", new String[]{"Login", "Register", "Write JSON", "Read JSON"});
 
-        System.out.printf("%-5s %-30s %-30s %-20s %-10s %-10s\n", "ID", "Name", "Description", "Brand", "Price", "Quantity");
-
-        int choice = 0;
-        while (choice != 1) {
+        int choice = -1;
+        while (choice != 0) {
             choice = mainMenu.prompt();
+
+            switch (choice) {
+                case 3:
+                    try {
+                        FileHandler.writeObjectToFile(mainMenu, "data\\main-menu.json");
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case 4:
+                    try {
+                        mainMenu = (Menu) FileHandler.readObjectFromFile("data\\main-menu.json", Menu.class);
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
     }       
 }

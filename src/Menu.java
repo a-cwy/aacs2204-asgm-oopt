@@ -1,22 +1,19 @@
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class Menu {
     private final String header;
-    private final ArrayList<String> options;
+    private final String[] options;
+
+//    public Menu() {
+//        this.header = "";
+//        this.options = new String[0];
+//    }
 
     public Menu(String header, String[] optionsArr) {
         this.header = header;
-        this.options = new ArrayList<>();
-        this.options.add("Exit / Back");
-        this.options.addAll(Arrays.asList(optionsArr));
-    }
-
-    public Menu(String header, ArrayList<String> optionsArr) {
-        this.header = header;
-        this.options = (ArrayList<String>) optionsArr.clone();
-        this.options.addFirst("Exit / Back");
+        this.options = new String[optionsArr.length + 1];
+        options[0] = "Exit/Back";
+        System.arraycopy(optionsArr, 0, this.options, 1, optionsArr.length);
     }
 
     // METHODS
@@ -26,8 +23,8 @@ public class Menu {
             System.out.print("=");
         }
         System.out.println();
-        for (int i = 0; i < this.options.size(); i++) {
-            System.out.printf("%2d: %s\n", i + 1, this.options.get(i));
+        for (int i = 0; i < this.options.length; i++) {
+            System.out.printf("%2d: %s\n", i, this.options[i]);
         }
 
         // Get input
@@ -35,16 +32,25 @@ public class Menu {
         String buf;
         int retval = -1;
 
-        while(retval < 1 || retval > this.options.size()) {
+        while (retval < 0 || retval > this.options.length) {
             System.out.print("\n> ");
             buf = sc.nextLine();
             try {
                 retval = Integer.parseInt(buf);
-            } catch(NumberFormatException e) {
+            } catch (NumberFormatException e) {
                 System.out.println("Option must be a number.");
             }
         }
 
         return retval;
+    }
+
+    // GET SET
+    public String getHeader() {
+        return header;
+    }
+
+    public String[] getOptions() {
+        return options;
     }
 }
