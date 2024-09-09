@@ -17,9 +17,9 @@ public class FileHandler {
      * Directory must exist, however the file will be created or overwritten if it already exists.
      * Does not return any value upon completion.
      *
-     * @param obj
-     * @param dir
-     * @throws JsonProcessingException
+     * @param obj object to as json
+     * @param dir directory of .json file to write to
+     * @throws JsonProcessingException handle as failure
      */
     static public void writeObjectToFile(Object obj, String dir) throws JsonProcessingException {
         String json = mapper.writeValueAsString(obj);
@@ -40,11 +40,10 @@ public class FileHandler {
      * Reads json file at given directory and maps it onto an object of type T.
      * The mapped object will be returned upon completion of function.
      *
-     * @param obj
-     * @param dir
+     * @param obj object to read json into
+     * @param dir directory of .json file to read from
      * @return An object of type T from json at given directory
-     * @param <T>
-     * @throws JsonProcessingException
+     * @throws JsonProcessingException handle as failure
      */
     static public <T> T readObjectFromFile(T obj, String dir) throws JsonProcessingException {
         String json = "";
