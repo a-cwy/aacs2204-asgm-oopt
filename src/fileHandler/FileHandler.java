@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.Scanner;
 
 public class FileHandler {
@@ -15,30 +14,20 @@ public class FileHandler {
 
     static public void writeObjectToFile(Object obj, String dir) throws JsonProcessingException {
         String json = mapper.writeValueAsString(obj);
-        System.out.println(json);
 
         try {
             File f = new File(dir);
-            if (f.createNewFile()) {
-                System.out.println("File created: " + f.getAbsolutePath());
-            } else {
-                System.out.println("File already exists: " + f.getAbsolutePath());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            f.createNewFile();
+        } catch (IOException _) { }
 
         try {
             FileWriter fw = new FileWriter(dir);
             fw.write(json);
             fw.close();
-            System.out.println("File written.");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException _) {}
     }
 
-    static public Object readObjectFromFile(String dir,  Type T) throws JsonProcessingException {
+    static public <T> T readObjectFromFile(T obj, String dir) throws JsonProcessingException {
         String json = "";
 
         try {
@@ -47,12 +36,13 @@ public class FileHandler {
             json = reader.nextLine();
 
             reader.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+        } catch (FileNotFoundException _) {}
+
+        if (json.isEmpty())  {
+            obj = null;
+            return null;
         }
 
-        Object retval;
-        retval = mapper.readValue(json, mapper.constructType(T));
-        return retval;
+        return mapper.readValue(json, mapper.constructType(obj.getClass()));
     }
 }
