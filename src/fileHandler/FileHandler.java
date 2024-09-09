@@ -12,6 +12,15 @@ import java.util.Scanner;
 public class FileHandler {
     static private final ObjectMapper mapper = new ObjectMapper();
 
+    /**
+     * Writes an object to a json file given a specified directory.
+     * Directory must exist, however the file will be created or overwritten if it already exists.
+     * Does not return any value upon completion.
+     *
+     * @param obj
+     * @param dir
+     * @throws JsonProcessingException
+     */
     static public void writeObjectToFile(Object obj, String dir) throws JsonProcessingException {
         String json = mapper.writeValueAsString(obj);
 
@@ -27,6 +36,16 @@ public class FileHandler {
         } catch (IOException _) {}
     }
 
+    /**
+     * Reads json file at given directory and maps it onto an object of type T.
+     * The mapped object will be returned upon completion of function.
+     *
+     * @param obj
+     * @param dir
+     * @return An object of type T from json at given directory
+     * @param <T>
+     * @throws JsonProcessingException
+     */
     static public <T> T readObjectFromFile(T obj, String dir) throws JsonProcessingException {
         String json = "";
 
