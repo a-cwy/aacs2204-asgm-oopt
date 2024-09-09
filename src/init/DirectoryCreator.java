@@ -1,9 +1,10 @@
 package init;
 
 import java.io.File;
+import java.util.ArrayList;
 
 class DirectoryCreator {
-    static void create(String[] dirs) {
+    static void create(ArrayList<String> dirs) {
         int created = 0;
         int found = 0;
 
