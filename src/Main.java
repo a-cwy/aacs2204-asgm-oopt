@@ -317,4 +317,48 @@ public class Main {
             }
         }
     }
+
+    private static void transactionMenu(Inventory inv, Account acc) {
+        transactionMenu.setHeader(String.format("Transaction menu for [%s].", inv.getLog().getOwnerID()));
+
+        int choice = -1;
+        while (choice != 0) {
+            choice = transactionMenu.prompt();
+
+            switch (choice) {
+                case 1: // CREATE TRANSACTION
+                {
+                    // TODO
+                    break;
+                }
+                case 2: // UPDATE TRANSACTION
+                {
+                    // TODO
+                    break;
+                }
+                case 3: // DISPLAY ALL TRANSACTIONS
+                {
+                    // TODO
+                    break;
+                }
+                case 4: // DISPLAY OUTGOING TRANSACTIONS
+                {
+                    // TODO
+                    break;
+                }
+                case 5: // DISPLAY INCOMING TRANSACTIONS
+                {
+                    // TODO
+                    break;
+                }
+                case 6: // DISPLAY PENDING TRANSACTIONS
+                {
+                    // TODO
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
+    }
 }
