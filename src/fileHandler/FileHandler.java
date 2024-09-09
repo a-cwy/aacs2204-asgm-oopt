@@ -38,9 +38,8 @@ public class FileHandler {
             reader.close();
         } catch (FileNotFoundException _) {}
 
-        if (json.isEmpty())  {
-            obj = null;
-            return null;
+        if (json.isEmpty()) {
+            return obj;
         }
 
         return mapper.readValue(json, mapper.constructType(obj.getClass()));

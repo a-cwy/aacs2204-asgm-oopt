@@ -1,8 +1,6 @@
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fileHandler.FileHandler;
 
-import java.io.IOException;
-
 public class Account {
     private String username;
     private String password;
@@ -27,7 +25,7 @@ public class Account {
             e.printStackTrace();
         }
 
-        if (fromFile == null) return false;
+        if (fromFile.username.isBlank()) return false;
 
         return acc.equals(fromFile);
     }
@@ -52,7 +50,7 @@ public class Account {
     }
 
     private static boolean checkUsernameExists(String username) {
-        Account temp = null;
+        Account temp = new Account();
 
         try {
             FileHandler.readObjectFromFile(temp, Main.accountsDir + username + ".json");
@@ -60,7 +58,7 @@ public class Account {
             e.printStackTrace();
         }
 
-        return temp != null;
+        return !temp.username.isBlank();
     }
 
     public boolean comparePassword(String password) {

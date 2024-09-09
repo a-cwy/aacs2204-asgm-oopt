@@ -13,9 +13,8 @@ public class Main {
             ArrayList<String> dirs = new ArrayList<>();
             dirs.addAll(0, List.of(dataDir));
             dirs.addAll(dirs.size(), List.of(accountsDir));
-            Init.setDirs(dirs);
 
-            // RUN INIT
+            Init.setDirs(dirs);
             Init.run();
         }
 
