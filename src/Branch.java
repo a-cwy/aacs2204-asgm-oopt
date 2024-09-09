@@ -1,4 +1,3 @@
-import java.util.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -9,7 +8,7 @@ public class Branch {
     private Address location;
     private ArrayList<Warehouse> warehouses;
     private ArrayList<Product> items;
-    //private TransactionLog log;
+    private TransactionLog log;
 
 
     public Branch(String id, String name, Address location) {
@@ -28,7 +27,7 @@ public class Branch {
         this.location = location;
         this.warehouses = warehouses;
         this.items = items;
-        //this.log = new TransactionLog();
+        this.log = new TransactionLog(id);
     }
 
     public double totalValue(){
@@ -156,7 +155,7 @@ public class Branch {
     public Product removeProductByName(String name){
         for (Product product : items){
             if (product.getName().equals(name)){
-                items.remove(name);
+                items.remove(product);
                 return product;
             }
         }
@@ -191,9 +190,9 @@ public class Branch {
         return items;
     }
 
-    /*public TransactionLog getLog() {
+    public TransactionLog getLog() {
         return log;
-    }*/
+    }
 
     public void setName(String name) {
         this.name = name;
