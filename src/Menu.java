@@ -1,7 +1,7 @@
 import java.util.Scanner;
 
 public class Menu {
-    private final String header;
+    private String header;
     private final String[] options;
 
     public Menu() {
@@ -45,6 +45,10 @@ public class Menu {
     }
 
     // GET SET
+    public void setHeader(String header) {
+        this.header = header;
+    }
+
     public String getHeader() {
         return header;
     }
