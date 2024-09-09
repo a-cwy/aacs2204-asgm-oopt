@@ -1,7 +1,18 @@
 package init;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class Init {
+    private static String[] dirs = null;
+
+    // run method
     public static void run() {
-        DirectoryCreator.create();
+        DirectoryCreator.create(Init.dirs);
+    }
+
+    // init setters
+    public static void setDirs(ArrayList<String> dirArr) {
+        Init.dirs = dirArr.toArray(new String[]{});
     }
 }

@@ -2,24 +2,24 @@ package init;
 
 import java.io.File;
 
-public class DirectoryCreator {
-    private static final String[] dirs = {
-            "data"
-    };
-
-    static void create() {
+class DirectoryCreator {
+    static void create(String[] dirs) {
         int created = 0;
         int found = 0;
 
         for (String dir : dirs) {
             File dirFile = new File(dir);
 
-            if (dirFile.mkdirs()) {
-                System.out.println("Directory created: .\\" + dir);
-                created++;
-            } else {
-                System.out.println("Directory found: .\\" + dir);
-                found++;
+            try {
+                if (dirFile.mkdirs()) {
+                    System.out.println("Directory created: .\\" + dir);
+                    created++;
+                } else {
+                    System.out.println("Directory found: .\\" + dir);
+                    found++;
+                }
+            } catch (SecurityException e) {
+                System.out.print("Insufficient permission to create directory.\n" + e + "\n");
             }
         }
 
