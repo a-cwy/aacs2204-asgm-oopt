@@ -1,7 +1,6 @@
 package init;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Init {
     private static String[] dirs = null;
