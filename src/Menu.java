@@ -5,8 +5,7 @@ public class Menu {
     private final String[] options;
 
     public Menu() {
-        this.header = "";
-        this.options = new String[0];
+        this("", new String[]{});
     }
 
     public Menu(String header, String[] optionsArr) {
