@@ -68,9 +68,6 @@ abstract class  Inventory {
         return items.remove(index);
     }
 
-    //TODO clone
-
-
     public ArrayList<Product> getItems() {
         return items;
     }
