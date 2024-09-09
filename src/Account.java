@@ -20,7 +20,7 @@ public class Account {
         Account fromFile = new Account();
 
         try {
-            fromFile = FileHandler.readObjectFromFile(fromFile, Main.accountsDir + acc.username + ".json");
+            fromFile = FileHandler.readObjectFromFile(fromFile, Main.dirs.get("accounts") + acc.username + ".json");
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -39,7 +39,7 @@ public class Account {
 
         Account acc = new Account(username, password);
         try {
-            FileHandler.writeObjectToFile(acc, Main.accountsDir + acc.username + ".json");
+            FileHandler.writeObjectToFile(acc, Main.dirs.get("accounts") + acc.username + ".json");
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             System.out.println("Failed to create account (Couldn't save account as file).");
@@ -53,7 +53,7 @@ public class Account {
         Account temp = new Account();
 
         try {
-            FileHandler.readObjectFromFile(temp, Main.accountsDir + username + ".json");
+            FileHandler.readObjectFromFile(temp, Main.dirs.get("accounts") + username + ".json");
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
