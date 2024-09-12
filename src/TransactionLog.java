@@ -6,6 +6,10 @@ public class TransactionLog {
     private final String ownerID;
     private final ArrayList<Transaction> log;
 
+    public TransactionLog(){
+        this.ownerID = null;
+        this.log = new ArrayList<>();
+    }
     public TransactionLog(String ownerID) {
         this.ownerID = ownerID;
         this.log = new ArrayList<>();

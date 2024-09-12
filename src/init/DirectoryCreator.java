@@ -13,17 +13,17 @@ class DirectoryCreator {
 
             try {
                 if (dirFile.mkdirs()) {
-                    System.out.println("Directory created: .\\" + dir);
+                    //System.out.println("Directory created: .\\" + dir);
                     created++;
                 } else {
-                    System.out.println("Directory found: .\\" + dir);
+                    //System.out.println("Directory found: .\\" + dir);
                     found++;
                 }
             } catch (SecurityException e) {
-                System.out.print("Insufficient permission to create directory.\n" + e + "\n");
+                //System.out.print("Insufficient permission to create directory.\n" + e + "\n");
             }
         }
 
-        System.out.printf("Created\t: %d\nFound\t: %d\n", created, found);
+        //System.out.printf("Created\t: %d\nFound\t: %d\n", created, found);
     }
 }

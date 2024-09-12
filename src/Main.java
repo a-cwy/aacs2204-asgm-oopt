@@ -1,8 +1,10 @@
+import com.fasterxml.jackson.core.JsonProcessingException;
+import fileHandler.FileHandler;
 import init.Init;
 
 import java.util.*;
-
 public class Main {
+    private static final Scanner sc = new Scanner(System.in);
     public static final Map<String, String> dirs = new HashMap<>();
     private static final Menu mainMenu = new Menu("Main Menu", new String[]{
             "Login",
@@ -18,6 +20,10 @@ public class Main {
             "Edit information",
             "Display products", // table format, include id, name, price, quantity, total subvalue, total value
             "Transactions"
+    });
+    private static final Menu supplierEditMenu = new Menu("Currently viewing [supplier].", new String[]{
+            "Edit name",
+            "Edit Location"
     });
     private static final Menu warehouseMenu = new Menu("Currently viewing [warehouse] as [user].", new String[]{
             "Display information", // id, name, location, total amt of items, total value of inventory, total subscribed suppliers
@@ -70,7 +76,6 @@ public class Main {
                     String username, password;
 
                     //get inputs
-                    Scanner sc = new Scanner(System.in);
                     System.out.print("Enter username: ");
                     username = sc.nextLine();
 
@@ -92,7 +97,6 @@ public class Main {
                     String username, password;
 
                     //get inputs
-                    Scanner sc = new Scanner(System.in);
                     System.out.print("Enter username: ");
                     username = sc.nextLine();
 
@@ -124,6 +128,29 @@ public class Main {
                     // Main.dirs.get("suppliers") + id + ".json";
                     //
                     // call supplierMenu(sup, acc);
+                    //test by waiz
+//                    Product[] prod = new Product[]{new Product("name", "name")};
+//
+//                    Address add = new Address ("No,9", "", "", "", "", 4700);
+//                    Supplier sup = new Supplier("1003", "Test 2", add, prod);
+//                    try {
+//                        FileHandler.writeObjectToFile(sup, Main.dirs.get("suppliers") + sup.getId() + ".json");
+//                    } catch (JsonProcessingException e) {
+//                        e.printStackTrace();
+//                        System.out.println("Failed to create account (Couldn't save account as file).");
+//                        return;
+//                    }
+                    String supplierID;
+
+                    System.out.print("Enter supplier id: ");
+                    supplierID = sc.nextLine();
+                    Supplier temp = new Supplier();
+                    try{
+                        temp = FileHandler.readObjectFromFile(temp, Main.dirs.get("suppliers") + supplierID + ".json");
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                    }
+                    supplierMenu(temp, acc);
 
                     // TODO
                     break;
@@ -168,16 +195,20 @@ public class Main {
             switch (choice) {
                 case 1: // DISPLAY INFO
                 {
+                    System.out.println("Supplier id: " + sup.getId());
+                    System.out.println("Supplier Name: " + sup.getName());
+                    System.out.println("Supplier Address: " + sup.getLocation());
                     // TODO
                     break;
                 }
                 case 2: // EDIT INFO
                 {
-                    // TODO
+                    supplierEditMenu(sup);
                     break;
                 }
                 case 3: // DISPLAY PRODUCTS
                 {
+
                     // TODO
                     break;
                 }
@@ -356,6 +387,73 @@ public class Main {
                     // TODO
                     break;
                 }
+                default:
+                    break;
+            }
+        }
+    }
+
+    private static void supplierEditMenu(Supplier sup) {
+        supplierEditMenu.setHeader(String.format("Currently viewing [%s].", sup.getId()));
+
+        int choice = -1;
+        while (choice != 0) {
+            choice = supplierEditMenu.prompt();
+
+            switch (choice) {
+                case 1: // EDIT NAME
+                {
+                   System.out.println("Current supplier name: " + sup.getName());
+                   System.out.print("New supplier name: ");
+                   sup.setName(sc.nextLine());
+                   System.out.print("Successfully updated supplier name");
+                    try {
+                        FileHandler.writeObjectToFile(sup, Main.dirs.get("suppliers") + sup.getId() + ".json");
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                        System.out.println("Failed to create account (Couldn't save account as file).");
+                        return;
+                    }
+                    // TODO
+                    break;
+                }
+                case 2: // EDIT LOCATION
+                {
+                    Address temp = new Address();
+                    System.out.println("Current supplier address: " + sup.getLocation());
+                    System.out.println("New supplier address: ");
+
+                    System.out.print("Enter unit no: ");
+                    temp.setUnit(sc.nextLine());
+
+                    System.out.print("Enter floor: ");
+                    temp.setFloor(sc.nextLine());
+
+                    System.out.print("Enter street: ");
+                    temp.setStreet(sc.nextLine());
+
+                    System.out.print("Enter area: ");
+                    temp.setArea(sc.nextLine());
+
+                    System.out.print("Enter state: ");
+                    temp.setState(sc.nextLine());
+
+                    System.out.print("Enter postal code: ");
+                    temp.setPostalCode(sc.nextInt());
+
+                    System.out.println("Successfully updated supplier address");
+                    sup.setLocation(temp);
+                    try {
+                        FileHandler.writeObjectToFile(sup, Main.dirs.get("suppliers") + sup.getId() + ".json");
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                        System.out.println("Failed to create account (Couldn't save account as file).");
+                        return;
+                    }
+                    // TODO
+                    break;
+                }
+
                 default:
                     break;
             }

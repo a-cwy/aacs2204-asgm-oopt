@@ -5,6 +5,10 @@ abstract class  Inventory {
     private ArrayList <Product> items;
     private TransactionLog log;
 
+    protected Inventory(){
+        this.items = new ArrayList();
+        this.log = null;
+    }
     protected Inventory(Product[] prod, String id){
         this.items = new ArrayList<>(Arrays.asList(prod));
         this.log = new TransactionLog(id);

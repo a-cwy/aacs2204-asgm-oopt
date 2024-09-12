@@ -1,3 +1,6 @@
+import com.fasterxml.jackson.core.JsonProcessingException;
+import fileHandler.FileHandler;
+
 import java.util.ArrayList;
 
 public class Supplier extends Inventory {
@@ -5,6 +8,12 @@ public class Supplier extends Inventory {
     private String name;
     private Address location;
 
+
+    public Supplier(){
+        this.id="";
+        this.name="";
+        this.location=null;
+    }
     public Supplier (String id, String name, Address location, Product[] prodArr){
         super(prodArr, id);
         this.id = id;
@@ -19,6 +28,7 @@ public class Supplier extends Inventory {
         this.location = location;
     }
 
+
     public String getId(){
         return id;
     }
@@ -30,5 +40,15 @@ public class Supplier extends Inventory {
     public Address getLocation(){
         return location;
     }
+
+    public void setName(String name){
+        this.name=name;
+    }
+
+    public void setLocation(Address location){
+        this.location = location;
+    }
+
+
 
 }

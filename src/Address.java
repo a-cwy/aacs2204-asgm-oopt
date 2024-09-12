@@ -7,6 +7,8 @@ public class Address {
     private String state;
     private int postalCode;
 
+    public Address(){}
+
     public Address(String unit, String floor, String street, String area, String state, int postalCode){
         this.unit = unit;
         this.floor = floor;
@@ -44,4 +46,24 @@ public class Address {
     public String toString() {
         return unit + "," + floor + "," + street + "," + area + "," + state + "," + postalCode;
     }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+    public void setFloor(String floor) {
+        this.floor = floor;
+    }
+    public void setStreet(String street) {
+        this.street = street;
+    }
+    public void setArea(String area) {
+        this.area = area;
+    }
+    public void setState(String state) {
+        this.state = state;
+    }
+    public void setPostalCode(int postalCode) {
+        this.postalCode = postalCode;
+    }
+
 }
