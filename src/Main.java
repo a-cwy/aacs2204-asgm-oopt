@@ -208,7 +208,7 @@ public class Main {
                 }
                 case 3: // DISPLAY PRODUCTS
                 {
-                    //test
+
                     // TODO
                     break;
                 }
