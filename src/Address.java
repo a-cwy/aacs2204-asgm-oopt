@@ -1,19 +1,18 @@
 public class Address {
 
     private String unit;
-    private String floor;
+    private String building;
     private String street;
-    private String area;
+    private String town;
     private String state;
     private int postalCode;
 
     public Address(){}
 
-    public Address(String unit, String floor, String street, String area, String state, int postalCode){
+    public Address(String unit, String building, String street, String state, int postalCode){
         this.unit = unit;
-        this.floor = floor;
+        this.building = building;
         this.street = street;
-        this.area = area;
         this.state = state;
         this.postalCode = postalCode;
     }
@@ -22,20 +21,20 @@ public class Address {
         return unit;
     }
 
-    public String getFloor() {
-        return floor;
+    public String getBuilding() {
+        return building;
     }
 
     public String getStreet() {
         return street;
     }
 
-    public int getPostalCode() {
-        return postalCode;
+    public String getTown() {
+        return town;
     }
 
-    public String getArea() {
-        return area;
+    public int getPostalCode() {
+        return postalCode;
     }
 
     public String getState() {
@@ -44,20 +43,20 @@ public class Address {
 
     @Override
     public String toString() {
-        return unit + "," + floor + "," + street + "," + area + "," + state + "," + postalCode;
+        return unit + "," + building + "," + street + "," + town + "," + state + "," + postalCode;
     }
 
     public void setUnit(String unit) {
         this.unit = unit;
     }
-    public void setFloor(String floor) {
-        this.floor = floor;
+    public void setBuilding(String building) {
+        this.building = building;
     }
     public void setStreet(String street) {
         this.street = street;
     }
-    public void setArea(String area) {
-        this.area = area;
+    public void setTown(String town) {
+        this.town = town;
     }
     public void setState(String state) {
         this.state = state;

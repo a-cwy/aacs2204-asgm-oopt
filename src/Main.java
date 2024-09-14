@@ -2,6 +2,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import fileHandler.FileHandler;
 import init.Init;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 public class Main {
     private static final Scanner sc = new Scanner(System.in);
@@ -11,9 +12,12 @@ public class Main {
             "Register"
     });
     private static final Menu userMenu = new Menu("Logged in as [user].", new String[]{
-            "View Supplier",
-            "View Warehouse",
-            "View Branch"
+            "View supplier",
+            "View warehouse",
+            "View branch",
+            "Add new supplier",
+            "Add new warehouse",
+            "Add new branch"
     });
     private static final Menu supplierMenu = new Menu("Currently viewing [supplier] as [user].", new String[]{
             "Display information", // id, name, location, total amt of items, total value of inventory
@@ -147,9 +151,7 @@ public class Main {
                     Supplier temp = new Supplier();
                     try{
                         temp = FileHandler.readObjectFromFile(temp, Main.dirs.get("suppliers") + supplierID + ".json");
-                    } catch (JsonProcessingException e) {
-                        e.printStackTrace();
-                    }
+                    } catch (JsonProcessingException _) {}
                     supplierMenu(temp, acc);
 
                     // TODO
@@ -177,6 +179,47 @@ public class Main {
                     // call branchMenu(br, acc);
 
                     // TODO
+                    break;
+                }
+                case 4: // ADD NEW SUPPLIER
+                {
+                    System.out.print("Enter ID for new supplier > ");
+                    String supplierID = sc.nextLine();
+
+                    try {
+                        Supplier sup = new Supplier();
+                        sup = FileHandler.readObjectFromFile(sup, Main.dirs.get("suppliers") + supplierID + ".json");
+                        if (sup.getId() != null) {
+                            System.out.println("ID already taken.");
+                            break;
+                        }
+                    } catch (JsonProcessingException _) {}
+
+                    System.out.print("Enter name for supplier > ");
+                    String supplierName = sc.nextLine();
+
+                    System.out.println("Enter location for supplier,");
+                    Address supplierLocation = new Address();
+                    System.out.print("\tUnit > ");
+                    supplierLocation.setUnit(sc.nextLine());
+                    System.out.print("\tBuilding > ");
+                    supplierLocation.setBuilding(sc.nextLine());
+                    System.out.print("\tStreet > ");
+                    supplierLocation.setStreet(sc.nextLine());
+                    System.out.print("\tTown > ");
+                    supplierLocation.setTown(sc.nextLine());
+                    System.out.print("\tState > ");
+                    supplierLocation.setState(sc.nextLine());
+                    System.out.print("\tPostal Code > ");
+                    supplierLocation.setPostalCode(sc.nextInt());
+                    sc.nextLine();
+
+                    Supplier sup = new Supplier(supplierID, supplierName, supplierLocation, new Product[]{});
+
+                    try {
+                        FileHandler.writeObjectToFile(sup, Main.dirs.get("suppliers") + supplierID + ".json");
+                    } catch (JsonProcessingException _) {}
+
                     break;
                 }
                 default:
@@ -214,9 +257,15 @@ public class Main {
                 }
                 case 4: // TRANSACTION MENU
                 {
-                    // transactionMenu(sup, acc);
+                    transactionMenu(sup, acc);
 
-                    // TODO
+                    try {
+                        FileHandler.writeObjectToFile(sup, Main.dirs.get("suppliers") + sup.getId() + ".json");
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+
                     break;
                 }
                 default:
@@ -276,8 +325,7 @@ public class Main {
                 }
                 case 8: // TRANSACTION MENU
                 {
-                    // transactionMenu(sup, acc);
-
+                    transactionMenu(war, acc);
                     // TODO
                     break;
                 }
@@ -338,8 +386,7 @@ public class Main {
                 }
                 case 8: // TRANSACTION MENU
                 {
-                    // transactionMenu(br, acc);
-
+                    transactionMenu(br, acc);
                     // TODO
                     break;
                 }
@@ -359,17 +406,168 @@ public class Main {
             switch (choice) {
                 case 1: // CREATE TRANSACTION
                 {
-                    // TODO
+                    System.out.print("Please enter ID of supplier/warehouse/branch to create a transaction with.\n> ");
+                    String buyerID = sc.nextLine();
+
+                    //check for self transact
+                    if (inv.getLog().getOwnerID().equals(buyerID)) {
+                        System.out.println("Can't perform transaction with self.");
+                        break;
+                    }
+
+                    //check for existence of buyer
+                    Supplier sup = new Supplier();
+                    Warehouse war = new Warehouse();
+                    Branch br = new Branch();
+                    switch (buyerID.charAt(0)) {
+                        case 'S':
+                        {
+                            try {
+                                sup = FileHandler.readObjectFromFile(sup, Main.dirs.get("suppliers") + buyerID + ".json");
+                            } catch (JsonProcessingException _) {}
+                            break;
+                        }
+                        case 'W':
+                        {
+                            try {
+                                war = FileHandler.readObjectFromFile(war, Main.dirs.get("warehouses") + buyerID + ".json");
+                            } catch (JsonProcessingException _) {}
+                            break;
+                        }
+                        case 'B':
+                        {
+                            try {
+                                br = FileHandler.readObjectFromFile(br, Main.dirs.get("suppliers") + buyerID + ".json");
+                            } catch (JsonProcessingException _) {}
+                            break;
+                        }
+                        default:
+                            System.out.println("ID does not exist.");
+                            break;
+                    }
+
+                    if (sup.getId().isBlank() && war.getId().isBlank() && br.getId().isBlank()) {
+                        System.out.println("ID does not exist.");
+                        break;
+                    }
+
+                    //create items list
+                    ArrayList<Product> items = new ArrayList<>();
+
+                    char cont = 'y';
+                    while (cont == 'y') {
+                        System.out.print("Enter product name > ");
+                        String name = sc.nextLine();
+
+                        System.out.print("Enter product price > RM");
+                        double price = sc.nextDouble();
+                        sc.nextLine();
+
+                        System.out.print("Enter quantity > ");
+                        int quantity = sc.nextInt();
+                        sc.nextLine();
+
+                        boolean exists = false;
+                        for (Product prod : items) {
+                            if (prod.getName().equals(name) && prod.getPrice() == price) {
+                                prod.addQuantity(quantity);
+                                exists = true;
+                                break;
+                            } else if (prod.getName().equals(name) && prod.getPrice() != price) {
+                                System.out.println("Product already exists with different price.");
+                                exists = true;
+                                break;
+                            }
+                        }
+                        if (!exists) items.addLast(new Product(name, price, quantity));
+
+                        System.out.print("Add more? (Y/N) > ");
+                        String temp = sc.nextLine();
+                        cont = Character.toLowerCase(temp.charAt(0));
+                    }
+
+                    //create a new transaction
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yy");
+                    Date currentTime = new Date();
+                    String tranID = inv.getLog().getOwnerID() +
+                            "-" +
+                            buyerID +
+                            "-" +
+                            dateFormat.format(currentTime);
+
+                    Transaction newTran = new Transaction(tranID, currentTime, inv.getLog().getOwnerID(), buyerID, items);
+
+                    //add transaction into logs
+                    inv.getLog().append(newTran);
+
+                    switch (buyerID.charAt(0)) {
+                        case 'S':
+                        {
+                            try {
+                                sup.getLog().append(newTran);
+                                FileHandler.writeObjectToFile(sup, Main.dirs.get("suppliers") + buyerID + ".json");
+                            } catch (JsonProcessingException _) {}
+                            break;
+                        }
+                        case 'W':
+                        {
+                            try {
+                                war.getLog().append(newTran);
+                                FileHandler.writeObjectToFile(war, Main.dirs.get("warehouses") + buyerID + ".json");
+                            } catch (JsonProcessingException _) {}
+                            break;
+                        }
+                        case 'B':
+                        {
+                            try {
+                                br.getLog().append(newTran);
+                                FileHandler.writeObjectToFile(br, Main.dirs.get("suppliers") + buyerID + ".json");
+                            } catch (JsonProcessingException _) {}
+                            break;
+                        }
+                        default:
+                            break;
+                    }
+
                     break;
                 }
                 case 2: // UPDATE TRANSACTION
                 {
-                    // TODO
+                    System.out.print("Enter transaction ID to update > ");
+                    String tranID = sc.nextLine();
+
+                    //find transaction
+                    Transaction tran = new Transaction();
+                    for (Transaction transaction : inv.getLog().getLog()) {
+                        transaction.printTransaction();
+                        if (transaction.getId().equals(tranID)) {
+                            tran = transaction;
+                        }
+                    }
+
+                    //check for existence
+                    if (tran.getId() == null) {
+                        System.out.println("Transaction does not exist.");
+                        break;
+                    }
+
+                    //check if completed
+                    if (!tran.getStatus().equals("PENDING")) {
+                        System.out.println("Transaction already completed.");
+                        break;
+                    }
+
+                    tran.printTransaction();
+
+
                     break;
                 }
                 case 3: // DISPLAY ALL TRANSACTIONS
                 {
-                    // TODO
+                    for (Transaction transaction : inv.getLog().getLog()) {
+                        transaction.printTransaction();
+                    }
+
                     break;
                 }
                 case 4: // DISPLAY OUTGOING TRANSACTIONS
@@ -409,8 +607,7 @@ public class Main {
                    System.out.print("Successfully updated supplier name");
                     try {
                         FileHandler.writeObjectToFile(sup, Main.dirs.get("suppliers") + sup.getId() + ".json");
-                    } catch (JsonProcessingException e) {
-                        e.printStackTrace();
+                    } catch (JsonProcessingException _) {
                         System.out.println("Failed to create account (Couldn't save account as file).");
                         return;
                     }
@@ -426,14 +623,14 @@ public class Main {
                     System.out.print("Enter unit no: ");
                     temp.setUnit(sc.nextLine());
 
-                    System.out.print("Enter floor: ");
-                    temp.setFloor(sc.nextLine());
+                    System.out.print("Enter building: ");
+                    temp.setBuilding(sc.nextLine());
 
                     System.out.print("Enter street: ");
                     temp.setStreet(sc.nextLine());
 
-                    System.out.print("Enter area: ");
-                    temp.setArea(sc.nextLine());
+                    System.out.print("Enter town: ");
+                    temp.setTown(sc.nextLine());
 
                     System.out.print("Enter state: ");
                     temp.setState(sc.nextLine());
@@ -445,12 +642,11 @@ public class Main {
                     sup.setLocation(temp);
                     try {
                         FileHandler.writeObjectToFile(sup, Main.dirs.get("suppliers") + sup.getId() + ".json");
-                    } catch (JsonProcessingException e) {
-                        e.printStackTrace();
-                        System.out.println("Failed to create account (Couldn't save account as file).");
-                        return;
+                    } catch (JsonProcessingException _) {
+                        System.out.println("Failed to edit account (Couldn't save account as file).");
+                        break;
                     }
-                    // TODO
+
                     break;
                 }
 

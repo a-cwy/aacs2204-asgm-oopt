@@ -2,11 +2,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 abstract class  Inventory {
-    private ArrayList <Product> items;
-    private TransactionLog log;
+    private final ArrayList <Product> items;
+    private final TransactionLog log;
 
     protected Inventory(){
-        this.items = new ArrayList();
+        this.items = new ArrayList<>();
         this.log = null;
     }
     protected Inventory(Product[] prod, String id){
@@ -33,16 +33,7 @@ abstract class  Inventory {
     }
 
     public void addProduct(Product prod){
-        items.add(prod);
-    }
-
-    public Product getProductByID(String id){
-        for(Product p : items){
-            if(p.getId().equals(id)){
-                return p;
-            }
-        }
-        return null;
+        items.addLast(prod);
     }
 
     public Product getProductByName(String name){
@@ -54,22 +45,9 @@ abstract class  Inventory {
         return null;
     }
 
-    public Product getProductByIndex(int index){
-        return items.get(index);
-    }
-
-    public Product removeProductByID(String id){
-        items.removeIf(p -> p.getId().equals(id));
-        return null;
-    }
-
     public Product removeProductByName(String name){
         items.removeIf(p -> p.getName().equals(name));
         return null;
-    }
-
-    public Product removeProductByIndex(int index){
-        return items.remove(index);
     }
 
     public ArrayList<Product> getItems() {

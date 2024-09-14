@@ -1,18 +1,15 @@
-import com.fasterxml.jackson.core.JsonProcessingException;
-import fileHandler.FileHandler;
-
 import java.util.ArrayList;
 
 public class Supplier extends Inventory {
-    private String id;
+    private final String id;
     private String name;
     private Address location;
 
 
     public Supplier(){
-        this.id="";
-        this.name="";
-        this.location=null;
+        this.id = null;
+        this.name = null;
+        this.location = null;
     }
     public Supplier (String id, String name, Address location, Product[] prodArr){
         super(prodArr, id);

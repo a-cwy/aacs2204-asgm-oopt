@@ -2,10 +2,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Warehouse extends Inventory{
-        private String id;
+        private final String id;
         private String name;
-        private Address location;
-        private ArrayList<Supplier> suppliers;
+        private final Address location;
+        private final ArrayList<Supplier> suppliers;
+
+        public Warehouse() {
+                this.id = "";
+                this.name = "";
+                this.location = new Address();
+                this.suppliers = new ArrayList<>();
+        }
 
         public Warehouse(String id, String name, Address location) {
                 super(new ArrayList<>(), id); //initialize with empty arraylist of product
@@ -103,10 +110,6 @@ public class Warehouse extends Inventory{
 
         public Address getLocation() {
                 return location;
-        }
-
-        public void setLocation(Address location) {
-                this.location = location;
         }
 
         public ArrayList<Supplier> getSuppliers() {

@@ -1,15 +1,21 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Branch {
+public class Branch extends Inventory {
 
-    private String id;
+    private final String id;
     private String name;
-    private Address location;
-    private ArrayList<Warehouse> warehouses;
-    private ArrayList<Product> items;
-    private TransactionLog log;
+    private final Address location;
+    private final ArrayList<Warehouse> warehouses;
+    private final ArrayList<Product> items;
 
+    public Branch () {
+        this.id = "";
+        this.name = "";
+        this.location = new Address();
+        this.warehouses = new ArrayList<>();
+        this.items = new ArrayList<>();
+    }
 
     public Branch(String id, String name, Address location) {
         this(id, name, location,new ArrayList<>(),new ArrayList<>()); //call another constructor of the same name class
@@ -27,7 +33,6 @@ public class Branch {
         this.location = location;
         this.warehouses = warehouses;
         this.items = items;
-        this.log = new TransactionLog(id);
     }
 
     public double totalValue(){
@@ -106,61 +111,61 @@ public class Branch {
         throw new IllegalArgumentException("Invalid Warehouse name");
     }
 
-    public void addProduct(Product product,int amt){
-        product.addQuantity(amt);
-    }
-
-    public Product getProductById(String id){
-        for (Product product : items){
-            if (product.getId().equals(id)){
-                return product;
-            }
-        }
-        throw new IllegalArgumentException("Invalid Product ID");
-    }
-
-    public Product getProductByIndex(int index){
-        if (index >= 0 && index < items.size()){
-            return items.get(index);
-        }
-        throw new IndexOutOfBoundsException("Invalid Product index");
-    }
-
-    public Product getProductByName(String name){
-        for (Product product : items){
-            if (product.getName().equals(name)){
-                return product;
-            }
-        }
-        throw new IllegalArgumentException("Invalid Product name");
-    }
-
-    public Product removeProductById(String id){
-        for (Product product : items){
-            if (product.getId().equals(id)){
-                items.remove(product);
-                return product;
-            }
-        }
-        throw new IllegalArgumentException("Invalid Product ID");
-    }
-
-    public Product removeProductByIndex(int index){
-        if (index > 0 && index < items.size()){
-            return items.remove(index);
-        }
-        throw new IndexOutOfBoundsException("Invalid Product index");
-    }
-
-    public Product removeProductByName(String name){
-        for (Product product : items){
-            if (product.getName().equals(name)){
-                items.remove(product);
-                return product;
-            }
-        }
-        throw new IllegalArgumentException("Invalid Product name");
-    }
+//    public void addProduct(Product product,int amt){
+//        product.addQuantity(amt);
+//    }
+//
+//    public Product getProductById(String id){
+//        for (Product product : items){
+//            if (product.getId().equals(id)){
+//                return product;
+//            }
+//        }
+//        throw new IllegalArgumentException("Invalid Product ID");
+//    }
+//
+//    public Product getProductByIndex(int index){
+//        if (index >= 0 && index < items.size()){
+//            return items.get(index);
+//        }
+//        throw new IndexOutOfBoundsException("Invalid Product index");
+//    }
+//
+//    public Product getProductByName(String name){
+//        for (Product product : items){
+//            if (product.getName().equals(name)){
+//                return product;
+//            }
+//        }
+//        throw new IllegalArgumentException("Invalid Product name");
+//    }
+//
+//    public Product removeProductById(String id){
+//        for (Product product : items){
+//            if (product.getId().equals(id)){
+//                items.remove(product);
+//                return product;
+//            }
+//        }
+//        throw new IllegalArgumentException("Invalid Product ID");
+//    }
+//
+//    public Product removeProductByIndex(int index){
+//        if (index > 0 && index < items.size()){
+//            return items.remove(index);
+//        }
+//        throw new IndexOutOfBoundsException("Invalid Product index");
+//    }
+//
+//    public Product removeProductByName(String name){
+//        for (Product product : items){
+//            if (product.getName().equals(name)){
+//                items.remove(product);
+//                return product;
+//            }
+//        }
+//        throw new IllegalArgumentException("Invalid Product name");
+//    }
 
     @Override
     public String toString() {
@@ -188,10 +193,6 @@ public class Branch {
 
     public ArrayList<Product> getItems() {
         return items;
-    }
-
-    public TransactionLog getLog() {
-        return log;
     }
 
     public void setName(String name) {

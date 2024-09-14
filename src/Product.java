@@ -1,25 +1,18 @@
 public class Product {
-    private String id;
     private String name;
     private double price;
     private int quantity;
 
     Product(){}
 
-    Product(String id, String name) {
-        this.id = id;
+    Product(String name) {
         this.name = name;
     }
 
-    Product(String id, String name, double price, int quantity) {
-        this.id = id;
+    Product(String name, double price, int quantity) {
         this.name = name;
         this.price = price;
         this.quantity = quantity;
-    }
-
-    public String getId() {
-        return id;
     }
 
     public String getName() {
@@ -60,7 +53,8 @@ public class Product {
 
     @Override
     public String toString() {
-        return "ID: " + id + "\nName: " + name + "\nPrice: " + price + "\nQuantity: " + quantity;
+        return "\nName: " + name + "\nPrice: " + price + "\nQuantity: " + quantity;
+        //return String.format("%-30s %-10.2f %-5d", name, price, quantity);
     }
 
 }

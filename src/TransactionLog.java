@@ -30,7 +30,7 @@ public class TransactionLog {
         // TODO formatted display of entire log
     }
 
-    public ArrayList<Transaction> getOutgoing() {
+    public ArrayList<Transaction> outgoing() {
         ArrayList<Transaction> retarr = new ArrayList<>();
 
         for (Transaction t : log) {
@@ -40,7 +40,7 @@ public class TransactionLog {
         return retarr;
     }
 
-    public ArrayList<Transaction> getIncoming() {
+    public ArrayList<Transaction> incoming() {
         ArrayList<Transaction> retarr = new ArrayList<>();
 
         for (Transaction t : log) {
@@ -65,5 +65,9 @@ public class TransactionLog {
     // GET SET
     public String getOwnerID() {
         return ownerID;
+    }
+
+    public ArrayList<Transaction> getLog() {
+        return this.log;
     }
 }
