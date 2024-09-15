@@ -5,8 +5,13 @@ import init.Init;
 import java.text.SimpleDateFormat;
 import java.util.*;
 public class Main {
-    private static final Scanner sc = new Scanner(System.in);
+    public static final Scanner sc = new Scanner(System.in);
     public static final Map<String, String> dirs = new HashMap<>();
+    public static void clearScreen() {
+        for (int i = 0; i < 100; i++) {
+            System.out.println();
+        }
+    }
     private static final Menu mainMenu = new Menu("Main Menu", new String[]{
             "Login",
             "Register"
@@ -67,6 +72,12 @@ public class Main {
     private static final Menu transactionUpdateMenu = new Menu("Updating transaction [transaction].", new String[]{
             "Complete transaction",
             "Cancel transaction"
+    });
+
+    private static final Menu productEditMenu = new Menu("Currently viewing [product].", new String[]{
+            "Edit name",
+            "Edit price",
+            "Edit quantity",
     });
 
     public static void main(String[] args) {
@@ -142,19 +153,6 @@ public class Main {
                     // read from file using directory :
                     // Main.dirs.get("suppliers") + id + ".json";
                     //
-                    // call supplierMenu(sup, acc);
-                    //test by waiz
-//                    Product[] prod = new Product[]{new Product("name", "name")};
-//
-//                    Address add = new Address ("No,9", "", "", "", "", 4700);
-//                    Supplier sup = new Supplier("1003", "Test 2", add, prod);
-//                    try {
-//                        FileHandler.writeObjectToFile(sup, Main.dirs.get("suppliers") + sup.getId() + ".json");
-//                    } catch (JsonProcessingException e) {
-//                        e.printStackTrace();
-//                        System.out.println("Failed to create account (Couldn't save account as file).");
-//                        return;
-//                    }
                     String supplierID;
 
                     System.out.print("Enter supplier id: ");
@@ -165,7 +163,6 @@ public class Main {
                     } catch (JsonProcessingException _) {}
                     supplierMenu(temp, acc);
 
-                    // TODO
                     break;
                 }
                 case 2: // VIEW WAREHOUSE
@@ -252,7 +249,7 @@ public class Main {
                     System.out.println("Supplier id: " + sup.getId());
                     System.out.println("Supplier Name: " + sup.getName());
                     System.out.println("Supplier Address: " + sup.getLocation());
-                    // TODO
+
                     break;
                 }
                 case 2: // EDIT INFO
@@ -262,7 +259,7 @@ public class Main {
                 }
                 case 3: // DISPLAY PRODUCTS
                 {
-
+                    sup.printInventory(sup);
                     // TODO
                     break;
                 }
@@ -289,6 +286,12 @@ public class Main {
                 }
                 case 5: // EDIT PRODUCT
                 {
+                    System.out.print("Enter product name > ");
+                    String name = sc.nextLine();
+
+                    System.out.println("Product name: " + sup.getProductByName(name).getName());
+                    System.out.println("Product price: " + sup.getProductByName(name).getPrice());
+                    System.out.println("Product quantity: " + sup.getProductByName(name).getQuantity());
                     //TODO
                     break;
                 }
@@ -376,8 +379,8 @@ public class Main {
 
                     try {
                         FileHandler.writeObjectToFile(war, Main.dirs.get("suppliers") + war.getId() + ".json");
-                    } catch (JsonProcessingException e) {
-                        e.printStackTrace();
+                    } catch (JsonProcessingException _) {
+
                         return;
                     }
 
@@ -452,8 +455,7 @@ public class Main {
 
                     try {
                         FileHandler.writeObjectToFile(br, Main.dirs.get("suppliers") + br.getId() + ".json");
-                    } catch (JsonProcessingException e) {
-                        e.printStackTrace();
+                    } catch (JsonProcessingException _) {
                         return;
                     }
 
@@ -919,6 +921,32 @@ public class Main {
 
                     break;
                 }
+
+                default:
+                    break;
+            }
+        }
+    }
+
+    private static void productEditMenu(Product prod) {
+        transactionMenu.setHeader(String.format("Edit Product menu for [%s].", prod.getName()));
+        int choice = -1;
+        while (choice != 0) {
+            choice = supplierEditMenu.prompt();
+
+            switch (choice) {
+                case 1: // EDIT NAME
+                {
+
+                    break;
+                }
+                case 2: // EDIT LOCATION
+                {
+
+
+                    break;
+                }
+                case 3: //Edit quantity
 
                 default:
                     break;

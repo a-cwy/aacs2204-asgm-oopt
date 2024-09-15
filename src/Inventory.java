@@ -27,9 +27,14 @@ abstract class  Inventory {
     }
 
     public void printInventory(){
+        int count=0;
         for (Product item : items) {
-            System.out.println(item.toString());
+            System.out.printf("%02d %-20s %-10.2f %-10d\n",count+1, item.getName(), item.getPrice(), item.getQuantity());
+            count++;
         }
+        System.out.println("Press enter to conitnue...");
+        Main.sc.nextLine();
+        Main.clearScreen();
     }
 
     public void addProduct(Product prod) {
