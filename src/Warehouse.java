@@ -8,8 +8,8 @@ public class Warehouse extends Inventory{
         private final ArrayList<Supplier> suppliers;
 
         public Warehouse() {
-                this.id = "";
-                this.name = "";
+                this.id = null;
+                this.name = null;
                 this.location = new Address();
                 this.suppliers = new ArrayList<>();
         }

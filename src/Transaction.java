@@ -47,9 +47,10 @@ public class Transaction implements CompletablePending {
         System.out.printf("Buyer: %s\n", buyerID);
         System.out.println("Items");
         for (Product item : items) {
-            System.out.printf("\t%-40s RM%.2f x %d = %.2f\n", item.getName(), item.getPrice(), item.getQuantity(), item.getPrice() * item.getQuantity());
+            System.out.printf("\t%-40s RM%-5.2f x %-5d = RM%-5.2f\n", item.getName(), item.getPrice(), item.getQuantity(), item.getPrice() * item.getQuantity());
         }
-        System.out.printf("Status: %s\n", status);
+        System.out.printf("%63sRM%-5.2f\n\n", "Total = ", payment.getAmount());
+        System.out.printf("Status: %s\n\n", status);
     }
 
     @Override

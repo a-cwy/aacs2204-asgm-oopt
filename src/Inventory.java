@@ -32,20 +32,23 @@ abstract class  Inventory {
         }
     }
 
-    public void addProduct(Product prod){
-        boolean exists = false;
-        for (Product item : items) {
-            if (item.getName().equals(prod.getName()) && item.getPrice() == prod.getPrice()) {
-                prod.addQuantity(prod.getQuantity());
-                exists = true;
-                break;
-            } else if (item.getName().equals(prod.getName()) && item.getPrice() != prod.getPrice()) {
-                System.out.println("Product already exists with different price.");
-                exists = true;
-                break;
-            }
+    public void addProduct(Product prod) {
+        Product temp = this.getProductByName(prod.getName());
+
+        // if product doesn't already exist
+        if (temp == null) {
+            this.items.add(prod);
+            return;
         }
-        if (!exists) items.addLast(prod);
+
+        // if product already exists
+        if (temp.getName().equals(prod.getName()) && temp.getPrice() == prod.getPrice()) {
+            temp.addQuantity(prod.getQuantity());
+            return;
+        }
+
+        // if product exists with different price
+        System.out.println("Product already exists with different price.");
     }
 
     public Product getProductByName(String name){

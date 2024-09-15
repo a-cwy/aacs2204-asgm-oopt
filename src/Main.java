@@ -268,7 +268,23 @@ public class Main {
                 }
                 case 4: // ADD PRODUCT
                 {
-                    //TODO
+                    System.out.print("Enter product name > ");
+                    String name = sc.nextLine();
+
+                    System.out.print("Enter product price > RM");
+                    double price = sc.nextDouble();
+                    sc.nextLine();
+
+                    System.out.print("Enter quantity > ");
+                    int quantity = sc.nextInt();
+                    sc.nextLine();
+
+                    sup.addProduct(new Product(name, price, quantity));
+
+                    try {
+                        FileHandler.writeObjectToFile(sup, Main.dirs.get("suppliers") + sup.getId() + ".json");
+                    } catch (JsonProcessingException _) {}
+
                     break;
                 }
                 case 5: // EDIT PRODUCT
@@ -287,10 +303,7 @@ public class Main {
 
                     try {
                         FileHandler.writeObjectToFile(sup, Main.dirs.get("suppliers") + sup.getId() + ".json");
-                    } catch (JsonProcessingException e) {
-                        e.printStackTrace();
-                        return;
-                    }
+                    } catch (JsonProcessingException _) {}
 
                     break;
                 }
@@ -493,7 +506,7 @@ public class Main {
                         case 'B':
                         {
                             try {
-                                br = FileHandler.readObjectFromFile(br, Main.dirs.get("suppliers") + buyerID + ".json");
+                                br = FileHandler.readObjectFromFile(br, Main.dirs.get("branches") + buyerID + ".json");
                             } catch (JsonProcessingException _) {}
                             break;
                         }
@@ -502,7 +515,7 @@ public class Main {
                             break;
                     }
 
-                    if (sup.getId().isBlank() && war.getId().isBlank() && br.getId().isBlank()) {
+                    if (sup.getName() == null && war.getName() == null && br.getName() == null) {
                         System.out.println("ID does not exist.");
                         break;
                     }
@@ -523,19 +536,37 @@ public class Main {
                         int quantity = sc.nextInt();
                         sc.nextLine();
 
-                        boolean exists = false;
-                        for (Product prod : items) {
+                        boolean possibleTransaction = false;
+                        for (Product prod : inv.getItems()) {
                             if (prod.getName().equals(name) && prod.getPrice() == price) {
-                                prod.addQuantity(quantity);
-                                exists = true;
-                                break;
-                            } else if (prod.getName().equals(name) && prod.getPrice() != price) {
-                                System.out.println("Product already exists with different price.");
-                                exists = true;
+                                if (prod.getQuantity() < quantity) {
+                                    System.out.println("Not enough stock to perform transaction.");
+                                    break;
+                                }
+
+                                possibleTransaction = true;
                                 break;
                             }
                         }
-                        if (!exists) items.addLast(new Product(name, price, quantity));
+
+                        if (!possibleTransaction) {
+                            System.out.println("Product does not exist.");
+                            continue;
+                        }
+
+                        boolean existsInTransaction = false;
+                        for (Product prod : items) {
+                            if (prod.getName().equals(name) && prod.getPrice() == price) {
+                                prod.addQuantity(quantity);
+                                existsInTransaction = true;
+                                break;
+                            } else if (prod.getName().equals(name) && prod.getPrice() != price) {
+                                System.out.println("Product already exists within transaction with different price.");
+                                existsInTransaction = true;
+                                break;
+                            }
+                        }
+                        if (!existsInTransaction) items.addLast(new Product(name, price, quantity));
 
                         System.out.print("Add more? (Y/N) > ");
                         String temp = sc.nextLine();
@@ -543,7 +574,7 @@ public class Main {
                     }
 
                     //create a new transaction
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yy");
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yy-HHmmss");
                     Date currentTime = new Date();
                     String tranID = inv.getLog().getOwnerID() +
                             "-" +
@@ -623,6 +654,12 @@ public class Main {
                         switch (updateType) {
                             case 1: // COMPLETE TRANSACTION
                             {
+                                // check if is incoming
+                                if (!tran.getBuyerID().equals(inv.getLog().getOwnerID())) {
+                                    System.out.println("Can only complete incoming transactions.");
+                                    break;
+                                }
+
                                 System.out.printf("Payment of RM%.2f.\n", tran.getPayment().getAmount());
                                 System.out.print("Proceed with payment? (Y/N) > ");
                                 char temp = Character.toLowerCase(sc.nextLine().charAt(0));
@@ -632,41 +669,80 @@ public class Main {
                                     break;
                                 }
 
-                                //remove item from seller
-                                tran.getPayment().succeed();
-                                tran.succeed();
-
                                 //find buyer and add items to buyer
-                                Supplier sup = new Supplier();
-                                Warehouse war = new Warehouse();
-                                Branch br = new Branch();
-                                switch (tran.getBuyerID().charAt(0)) {
+                                Supplier supS = new Supplier();
+                                Warehouse warS = new Warehouse();
+                                Branch brS = new Branch();
+                                switch (tran.getSellerID().charAt(0)) {
                                     case 'S':
                                     {
                                         try {
-                                            sup = FileHandler.readObjectFromFile(sup, Main.dirs.get("suppliers") + tran.getBuyerID() + ".json");
-                                            for (Transaction transaction : sup.getLog().getLog()) {
-                                                if (transaction.getId().equals(tranID)) {
+                                            supS = FileHandler.readObjectFromFile(supS, Main.dirs.get("suppliers") + tran.getSellerID() + ".json");
 
+                                            for (Product item : tran.getItems()) {
+                                                supS.getProductByName(item.getName()).reduceQuantity(item.getQuantity());
+                                                inv.addProduct(item);
+                                            }
 
+                                            for (Transaction transaction : supS.getLog().getLog()) {
+                                                if (transaction.getId().equals(tran.getId())) {
+                                                    tran.getPayment().succeed();
+                                                    tran.succeed();
                                                     transaction.getPayment().succeed();
                                                     transaction.succeed();
+                                                    break;
                                                 }
                                             }
+
+                                            FileHandler.writeObjectToFile(supS, Main.dirs.get("suppliers") + tran.getSellerID() + ".json");
                                         } catch (JsonProcessingException _) {}
                                         break;
                                     }
                                     case 'W':
                                     {
                                         try {
-                                            war = FileHandler.readObjectFromFile(war, Main.dirs.get("warehouses") + tran.getBuyerID() + ".json");
+                                            warS = FileHandler.readObjectFromFile(warS, Main.dirs.get("suppliers") + tran.getSellerID() + ".json");
+
+                                            for (Product item : tran.getItems()) {
+                                                warS.getProductByName(item.getName()).reduceQuantity(item.getQuantity());
+                                                inv.addProduct(item);
+                                            }
+
+                                            for (Transaction transaction : warS.getLog().getLog()) {
+                                                if (transaction.getId().equals(tran.getId())) {
+                                                    tran.getPayment().succeed();
+                                                    tran.succeed();
+                                                    transaction.getPayment().succeed();
+                                                    transaction.succeed();
+                                                    break;
+                                                }
+                                            }
+
+                                            FileHandler.writeObjectToFile(warS, Main.dirs.get("suppliers") + tran.getSellerID() + ".json");
                                         } catch (JsonProcessingException _) {}
                                         break;
                                     }
                                     case 'B':
                                     {
                                         try {
-                                            br = FileHandler.readObjectFromFile(br, Main.dirs.get("suppliers") + tran.getBuyerID() + ".json");
+                                            brS = FileHandler.readObjectFromFile(brS, Main.dirs.get("suppliers") + tran.getSellerID() + ".json");
+
+                                            for (Product item : tran.getItems()) {
+                                                brS.getProductByName(item.getName()).reduceQuantity(item.getQuantity());
+                                                inv.addProduct(item);
+                                            }
+
+                                            for (Transaction transaction : brS.getLog().getLog()) {
+                                                if (transaction.getId().equals(tran.getId())) {
+                                                    tran.getPayment().succeed();
+                                                    tran.succeed();
+                                                    transaction.getPayment().succeed();
+                                                    transaction.succeed();
+                                                    break;
+                                                }
+                                            }
+
+                                            FileHandler.writeObjectToFile(brS, Main.dirs.get("suppliers") + tran.getSellerID() + ".json");
                                         } catch (JsonProcessingException _) {}
                                         break;
                                     }
@@ -682,6 +758,61 @@ public class Main {
                             }
                             case 2: // CANCEL TRANSACTION
                             {
+                                tran.getPayment().fail();
+                                tran.fail();
+
+                                // find buyer and fail transaction
+                                Supplier sup = new Supplier();
+                                Warehouse war = new Warehouse();
+                                Branch br = new Branch();
+                                switch (tran.getBuyerID().charAt(0)) {
+                                    case 'S':
+                                    {
+                                        try {
+                                            sup = FileHandler.readObjectFromFile(sup, Main.dirs.get("suppliers") + tran.getBuyerID() + ".json");
+                                            for (Transaction transaction : sup.getLog().getLog()) {
+                                                if (transaction.getId().equals(tranID)) {
+                                                    transaction.getPayment().fail();
+                                                    transaction.fail();
+                                                }
+                                            }
+                                            FileHandler.writeObjectToFile(sup, Main.dirs.get("suppliers") + tran.getBuyerID() + ".json");
+                                        } catch (JsonProcessingException _) {}
+                                        break;
+                                    }
+                                    case 'W':
+                                    {
+                                        try {
+                                            war = FileHandler.readObjectFromFile(war, Main.dirs.get("warehouses") + tran.getBuyerID() + ".json");
+                                            for (Transaction transaction : war.getLog().getLog()) {
+                                                if (transaction.getId().equals(tranID)) {
+                                                    transaction.getPayment().fail();
+                                                    transaction.fail();
+                                                }
+                                            }
+                                            FileHandler.writeObjectToFile(war, Main.dirs.get("warehouses") + tran.getBuyerID() + ".json");
+                                        } catch (JsonProcessingException _) {}
+                                        break;
+                                    }
+                                    case 'B':
+                                    {
+                                        try {
+                                            br = FileHandler.readObjectFromFile(br, Main.dirs.get("branches") + tran.getBuyerID() + ".json");
+                                            for (Transaction transaction : br.getLog().getLog()) {
+                                                if (transaction.getId().equals(tranID)) {
+                                                    transaction.getPayment().fail();
+                                                    transaction.fail();
+                                                }
+                                            }
+                                            FileHandler.writeObjectToFile(br, Main.dirs.get("branches") + tran.getBuyerID() + ".json");
+                                        } catch (JsonProcessingException _) {}
+                                        break;
+                                    }
+                                    default:
+                                        break;
+                                }
+
+                                System.out.println("Transaction cancelled.");
                                 break;
                             }
                         }
@@ -701,17 +832,27 @@ public class Main {
                 }
                 case 4: // DISPLAY OUTGOING TRANSACTIONS
                 {
-                    // TODO
+                    for (Transaction transaction : inv.getLog().outgoing()) {
+                        transaction.printTransaction();
+                    }
+
                     break;
                 }
                 case 5: // DISPLAY INCOMING TRANSACTIONS
                 {
-                    // TODO
+                    for (Transaction transaction : inv.getLog().incoming()) {
+                        transaction.printTransaction();
+                    }
+
                     break;
                 }
                 case 6: // DISPLAY PENDING TRANSACTIONS
                 {
-                    // TODO
+                    for (Transaction transaction : inv.getLog().getLog()) {
+                        if (!transaction.getStatus().equals("PENDING")) continue;
+                        transaction.printTransaction();
+                    }
+
                     break;
                 }
                 default:

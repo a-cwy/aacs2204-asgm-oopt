@@ -10,8 +10,8 @@ public class Branch extends Inventory {
     private final ArrayList<Product> items;
 
     public Branch () {
-        this.id = "";
-        this.name = "";
+        this.id = null;
+        this.name = null;
         this.location = new Address();
         this.warehouses = new ArrayList<>();
         this.items = new ArrayList<>();
