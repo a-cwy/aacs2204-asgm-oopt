@@ -1,3 +1,5 @@
+package root;
+
 import java.util.Scanner;
 
 public class Menu {

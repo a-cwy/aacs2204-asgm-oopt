@@ -1,5 +1,8 @@
+package root;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
-import fileHandler.FileHandler;
+import root.util.FileHandler;
+import root.util.FileHandler;
 
 public class Account {
     private String username;

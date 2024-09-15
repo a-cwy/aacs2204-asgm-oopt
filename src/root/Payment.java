@@ -1,3 +1,5 @@
+package root;
+
 public class Payment implements CompletablePending {
     // ATTRIBUTES
     private final double amount;

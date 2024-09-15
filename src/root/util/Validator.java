@@ -1,9 +1,8 @@
-package validator;
+package root.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import fileHandler.FileHandler;
 
-//import src.Supplier;
+//import root.Supplier;
 //
 //
 //public class Validator {

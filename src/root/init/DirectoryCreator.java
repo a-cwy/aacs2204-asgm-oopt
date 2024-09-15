@@ -1,4 +1,4 @@
-package init;
+package root.init;
 
 import java.io.File;
 import java.util.ArrayList;

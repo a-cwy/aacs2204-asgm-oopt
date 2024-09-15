@@ -1,3 +1,5 @@
+package root;
+
 public class Product {
     private String name;
     private double price;

@@ -1,3 +1,5 @@
+package root;
+
 import java.util.ArrayList;
 
 public class Supplier extends Inventory {
