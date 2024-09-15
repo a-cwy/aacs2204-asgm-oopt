@@ -33,7 +33,19 @@ abstract class  Inventory {
     }
 
     public void addProduct(Product prod){
-        items.addLast(prod);
+        boolean exists = false;
+        for (Product item : items) {
+            if (item.getName().equals(prod.getName()) && item.getPrice() == prod.getPrice()) {
+                prod.addQuantity(prod.getQuantity());
+                exists = true;
+                break;
+            } else if (item.getName().equals(prod.getName()) && item.getPrice() != prod.getPrice()) {
+                System.out.println("Product already exists with different price.");
+                exists = true;
+                break;
+            }
+        }
+        if (!exists) items.addLast(prod);
     }
 
     public Product getProductByName(String name){

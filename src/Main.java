@@ -23,6 +23,9 @@ public class Main {
             "Display information", // id, name, location, total amt of items, total value of inventory
             "Edit information",
             "Display products", // table format, include id, name, price, quantity, total subvalue, total value
+            "Add product",
+            "Edit product",
+            "Remove product",
             "Transactions"
     });
     private static final Menu supplierEditMenu = new Menu("Currently viewing [supplier].", new String[]{
@@ -33,8 +36,10 @@ public class Main {
             "Display information", // id, name, location, total amt of items, total value of inventory, total subscribed suppliers
             "Edit information",
             "Display products", // table format, include id, name, price, quantity, total subvalue, total value
+            "Add product",
+            "Edit product",
+            "Remove product",
             "Display subscribed suppliers", // table format, id, name, location
-            "Display supplier inventory", // prompt id and display info
             "Subscribe supplier",
             "Unsubscribe supplier",
             "Transactions"
@@ -43,10 +48,12 @@ public class Main {
             "Display information", // id, name, location, total amt of items, total value of inventory, total subscribed warehouses
             "Edit information",
             "Display products", // table format, include id, name, price, quantity, total subvalue, total value
+            "Add product",
+            "Edit product",
+            "Remove product",
             "Display subscribed warehouses", // table format, id, name, location
-            "Display warehouse inventory", // prompt id and display info
-            "Subscribe supplier",
-            "Unsubscribe supplier",
+            "Subscribe warehouse",
+            "Unsubscribe warehouse",
             "Transactions"
     });
     private static final Menu transactionMenu = new Menu("Transactions for [inventory].", new String[]{
@@ -56,6 +63,10 @@ public class Main {
             "Display outgoing transactions",
             "Display incoming transactions",
             "Display pending transactions"
+    });
+    private static final Menu transactionUpdateMenu = new Menu("Updating transaction [transaction].", new String[]{
+            "Complete transaction",
+            "Cancel transaction"
     });
 
     public static void main(String[] args) {
@@ -255,7 +266,22 @@ public class Main {
                     // TODO
                     break;
                 }
-                case 4: // TRANSACTION MENU
+                case 4: // ADD PRODUCT
+                {
+                    //TODO
+                    break;
+                }
+                case 5: // EDIT PRODUCT
+                {
+                    //TODO
+                    break;
+                }
+                case 6: // REMOVE PRODUCT
+                {
+                    //TODO
+                    break;
+                }
+                case 7: // TRANSACTION MENU
                 {
                     transactionMenu(sup, acc);
 
@@ -297,36 +323,51 @@ public class Main {
                     // TODO
                     break;
                 }
-                case 4: // DISPLAY SUBSCRIBED SUPPLIERS
+                case 4: // ADD PRODUCT
+                {
+                    //TODO
+                    break;
+                }
+                case 5: // EDIT PRODUCT
+                {
+                    //TODO
+                    break;
+                }
+                case 6: // REMOVE PRODUCT
+                {
+                    //TODO
+                    break;
+                }
+                case 7: // DISPLAY SUBSCRIBED SUPPLIERS
                 {
                     // TODO
                     break;
                 }
-                case 5: // DISPLAY SUPPLIER INVENTORY
-                {
-                    // prompt id and display
-
-                    // TODO
-                    break;
-                }
-                case 6: // SUBSCRIBE SUPPLIER
+                case 8: // SUBSCRIBE SUPPLIER
                 {
                     // prompt id, existence check, append to subscribed and save file
 
                     // TODO
                     break;
                 }
-                case 7: // UNSUBSCRIBE SUPPLIER
+                case 9: // UNSUBSCRIBE SUPPLIER
                 {
                     // prompt id, existence check, remove from subscribed and save file
 
                     // TODO
                     break;
                 }
-                case 8: // TRANSACTION MENU
+                case 10: // TRANSACTION MENU
                 {
                     transactionMenu(war, acc);
-                    // TODO
+
+                    try {
+                        FileHandler.writeObjectToFile(war, Main.dirs.get("suppliers") + war.getId() + ".json");
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+
                     break;
                 }
                 default:
@@ -358,36 +399,51 @@ public class Main {
                     // TODO
                     break;
                 }
-                case 4: // DISPLAY SUBSCRIBED WAREHOUSES
+                case 4: // ADD PRODUCT
+                {
+                    //TODO
+                    break;
+                }
+                case 5: // EDIT PRODUCT
+                {
+                    //TODO
+                    break;
+                }
+                case 6: // REMOVE PRODUCT
+                {
+                    //TODO
+                    break;
+                }
+                case 7: // DISPLAY SUBSCRIBED WAREHOUSES
                 {
                     // TODO
                     break;
                 }
-                case 5: // DISPLAY WAREHOUSE INVENTORY
-                {
-                    // prompt id and display
-
-                    // TODO
-                    break;
-                }
-                case 6: // SUBSCRIBE WAREHOUSE
+                case 8: // SUBSCRIBE WAREHOUSE
                 {
                     // prompt id, existence check, append to subscribed and save file
 
                     // TODO
                     break;
                 }
-                case 7: // UNSUBSCRIBE WAREHOUSE
+                case 9: // UNSUBSCRIBE WAREHOUSE
                 {
                     // prompt id, existence check, remove from subscribed and save file
 
                     // TODO
                     break;
                 }
-                case 8: // TRANSACTION MENU
+                case 10: // TRANSACTION MENU
                 {
                     transactionMenu(br, acc);
-                    // TODO
+
+                    try {
+                        FileHandler.writeObjectToFile(br, Main.dirs.get("suppliers") + br.getId() + ".json");
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+
                     break;
                 }
                 default:
@@ -539,9 +595,9 @@ public class Main {
                     //find transaction
                     Transaction tran = new Transaction();
                     for (Transaction transaction : inv.getLog().getLog()) {
-                        transaction.printTransaction();
                         if (transaction.getId().equals(tranID)) {
                             tran = transaction;
+                            break;
                         }
                     }
 
@@ -557,8 +613,81 @@ public class Main {
                         break;
                     }
 
-                    tran.printTransaction();
+                    transactionUpdateMenu.setHeader("Updating transaction [" + tran.getId() + "].");
+                    int updateType = -1;
+                    while (updateType != 0) {
+                        tran.printTransaction();
+                        System.out.println();
+                        updateType = transactionUpdateMenu.prompt();
 
+                        switch (updateType) {
+                            case 1: // COMPLETE TRANSACTION
+                            {
+                                System.out.printf("Payment of RM%.2f.\n", tran.getPayment().getAmount());
+                                System.out.print("Proceed with payment? (Y/N) > ");
+                                char temp = Character.toLowerCase(sc.nextLine().charAt(0));
+
+                                if (temp != 'y') {
+                                    System.out.println("Payment cancelled.");
+                                    break;
+                                }
+
+                                //remove item from seller
+                                tran.getPayment().succeed();
+                                tran.succeed();
+
+                                //find buyer and add items to buyer
+                                Supplier sup = new Supplier();
+                                Warehouse war = new Warehouse();
+                                Branch br = new Branch();
+                                switch (tran.getBuyerID().charAt(0)) {
+                                    case 'S':
+                                    {
+                                        try {
+                                            sup = FileHandler.readObjectFromFile(sup, Main.dirs.get("suppliers") + tran.getBuyerID() + ".json");
+                                            for (Transaction transaction : sup.getLog().getLog()) {
+                                                if (transaction.getId().equals(tranID)) {
+
+
+                                                    transaction.getPayment().succeed();
+                                                    transaction.succeed();
+                                                }
+                                            }
+                                        } catch (JsonProcessingException _) {}
+                                        break;
+                                    }
+                                    case 'W':
+                                    {
+                                        try {
+                                            war = FileHandler.readObjectFromFile(war, Main.dirs.get("warehouses") + tran.getBuyerID() + ".json");
+                                        } catch (JsonProcessingException _) {}
+                                        break;
+                                    }
+                                    case 'B':
+                                    {
+                                        try {
+                                            br = FileHandler.readObjectFromFile(br, Main.dirs.get("suppliers") + tran.getBuyerID() + ".json");
+                                        } catch (JsonProcessingException _) {}
+                                        break;
+                                    }
+                                    default:
+                                        break;
+                                }
+
+                                System.out.println("Payment completed.");
+                                System.out.println("Transaction completed.");
+                                updateType = 0;
+
+                                break;
+                            }
+                            case 2: // CANCEL TRANSACTION
+                            {
+                                break;
+                            }
+                        }
+                    }
+
+                    tran.printTransaction();
 
                     break;
                 }
