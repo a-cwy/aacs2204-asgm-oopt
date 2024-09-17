@@ -6,14 +6,14 @@ import java.util.Arrays;
 public class Warehouse extends Inventory{
         private final String id;
         private String name;
-        private final Address location;
-        private final ArrayList<Supplier> suppliers;
+        private Address location;
+        private ArrayList<Supplier> suppliers;
 
-        public Warehouse() {
+        public Warehouse(){
                 this.id = null;
                 this.name = null;
-                this.location = new Address();
-                this.suppliers = new ArrayList<>();
+                this.location = null;
+                this.suppliers = null;
         }
 
         public Warehouse(String id, String name, Address location) {
@@ -112,6 +112,10 @@ public class Warehouse extends Inventory{
 
         public Address getLocation() {
                 return location;
+        }
+
+        public void setLocation(Address location){
+                this.location = location;
         }
 
         public ArrayList<Supplier> getSuppliers() {

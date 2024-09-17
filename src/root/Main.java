@@ -87,6 +87,11 @@ public class Main {
             "Reduce quantity",
     });
 
+    private static final Menu warehouseEditMenu = new Menu("Currently editing [warehouse] as [user].", new String[]{
+            "Edit Warehouse Name",
+            "Edit Warehouse Location"
+    });
+
     public static void main(String[] args) {
         {   // INIT BLOCK
             dirs.put("data", "data\\");
@@ -176,12 +181,24 @@ public class Main {
                 {
                     // prompt for warehouse id
                     //
+                    System.out.print("Enter Warehouse id: ");
+                    String warehouseID = sc.nextLine();
+
                     // read from file using directory :
                     // Main.dirs.get("warehouses") + id + ".json";
                     //
-                    // call warehouseMenu(war, acc);
+                    Warehouse warehouse = new Warehouse();
+                    try {
+                        // read warehouse from file
+                        warehouse = FileHandler.readObjectFromFile(warehouse, Main.dirs.get("warehouses") + warehouseID + ".json");
+                    } catch (JsonProcessingException _) {}
 
-                    // TODO
+                    if (warehouse.getId() == null) {
+                        System.out.println("ID does not exist.\n");
+                        break;
+                    }
+                    warehouseMenu(warehouse, acc);
+
                     break;
                 }
                 case 3: // VIEW BRANCH
@@ -234,6 +251,130 @@ public class Main {
                     try {
                         FileHandler.writeObjectToFile(sup, Main.dirs.get("suppliers") + supplierID + ".json");
                     } catch (JsonProcessingException _) {}
+
+                    break;
+                }
+                case 5: { // ADD NEW WAREHOUSE
+                    String warehouseID;
+                    boolean validWarehouseID = false;
+
+                    // loop to check warehouse id
+                    do {
+                        System.out.print("Enter new Warehouse ID (format WXXXX): ");
+                        warehouseID = sc.nextLine();
+
+                        // regex checking
+                        if (warehouseID.matches("W\\d{4}")) {
+                            // check existence
+                            Warehouse temp = new Warehouse();
+                            try {
+                                temp = FileHandler.readObjectFromFile(temp, Main.dirs.get("warehouses") + warehouseID + ".json");
+                                if (temp.getId() != null) {
+                                    System.out.println("Warehouse ID already exists!");
+                                } else {
+                                    validWarehouseID = true;
+                                }
+                            } catch (JsonProcessingException e) {
+                                System.out.println("Error checking warehouse ID!");
+                            }
+                        } else {
+                            System.out.println("Invalid Warehouse ID!");
+                        }
+                    } while (!validWarehouseID);
+
+
+                    // input warehouse name
+                    System.out.print("Enter Warehouse Name: ");
+                    String warehouseName = sc.nextLine();
+
+                    // validate input
+                    if (warehouseName.isEmpty()) {
+                        System.out.println("Warehouse name cannot be empty!");
+                        break;
+                    }
+
+                    // input warehouse location
+                    Address warehouseAddress = new Address();
+
+                    // enter unit no and validate
+                    System.out.print("Enter Unit No: ");
+                    String unitNo = sc.nextLine();
+                    if (unitNo.isEmpty()) {
+                        System.out.println("Unit No cannot be empty.");
+                        break;
+                    }
+                    warehouseAddress.setUnit(unitNo);
+
+                    // enter new building and validate
+                    System.out.print("Enter Building: ");
+                    String building = sc.nextLine();
+                    if (building.isEmpty()) {
+                        System.out.println("Building name cannot be empty.");
+                        break;
+                    }
+                    warehouseAddress.setBuilding(building);
+
+                    // enter new street and validate
+                    System.out.print("Enter Street: ");
+                    String street = sc.nextLine();
+                    if (street.isEmpty()) {
+                        System.out.println("Street name cannot be empty.");
+                        break;
+                    }
+                    warehouseAddress.setStreet(street);
+
+                    // enter new town and validate
+                    System.out.print("Enter Town: ");
+                    String town = sc.nextLine();
+                    if (town.isEmpty()) {
+                        System.out.println("Town name cannot be empty.");
+                        break;
+                    }
+                    warehouseAddress.setTown(town);
+
+                    // enter new state and validate
+                    System.out.print("Enter State: ");
+                    String state = sc.nextLine();
+                    if (state.isEmpty()) {
+                        System.out.println("State name cannot be empty.");
+                        break;
+                    }
+                    warehouseAddress.setState(state);
+
+                    // enter new postal code and validate
+                    System.out.print("Enter Postal Code: ");
+                    int postalCode = sc.nextInt();
+                    if (postalCode <= 0 || postalCode > 999999) {
+                        System.out.println("Postal code must be a positive number and less than 6 digits.");
+                        break;
+                    }
+                    warehouseAddress.setPostalCode(postalCode);
+
+                    // check to confirm to save
+                    String confirm;
+                    System.out.println("\nPlease confirm the new Warehouse details:");
+                    System.out.println("Warehouse ID: " + warehouseID);
+                    System.out.println("Warehouse Name: " + warehouseName);
+                    System.out.println("Warehouse Location: " + warehouseAddress.toString());
+
+                    // prompt for user input
+                    do {
+                        System.out.print("Do you want to save this Warehouse? (Y/N): ");
+                        confirm = sc.nextLine().toLowerCase();
+                    } while (!confirm.equals("y") && !confirm.equals("n"));
+
+                    if (confirm.equals("y")) {
+                        // save new warehouse to file
+                        Warehouse newWarehouse = new Warehouse(warehouseID, warehouseName, warehouseAddress);
+                        try {
+                            FileHandler.writeObjectToFile(newWarehouse, Main.dirs.get("warehouses") + warehouseID + ".json");
+                            System.out.println("New Warehouse created successfully!");
+                        } catch (JsonProcessingException e) {
+                            System.out.println("Error saving the new Warehouse to file!");
+                        }
+                    } else {
+                        System.out.println("Warehouse creation cancelled!");
+                    }
 
                     break;
                 }
@@ -375,51 +516,103 @@ public class Main {
             switch (choice) {
                 case 1: // DISPLAY INFO
                 {
-                    // TODO
+                    System.out.println("Warehouse ID: " + war.getId());
+                    System.out.println("Warehouse Name: " + war.getName());
+                    System.out.println("Warehouse Location: " + war.getLocation());
+                    System.out.println("Total products: " + war.getItems().size());
+                    System.out.println("Total value of inventory: RM" + war.totalValue());
+
+                    // display subscribed suppliers if available
+                    if (!war.getSuppliers().isEmpty()) {
+                        System.out.println("Subscribed Suppliers:");
+                        for (Supplier supplier : war.getSuppliers()) {
+                            System.out.println("- " + supplier.getName() + " (ID: " + supplier.getId() + ")");
+                        }
+                    } else {
+                        System.out.println("No subscribed suppliers!");
+                    }
+
                     break;
                 }
                 case 2: // EDIT INFO
                 {
-                    // TODO
+                    // edit warehouse function
+                    warehouseEditMenu(war, acc);
                     break;
                 }
                 case 3: // DISPLAY PRODUCTS
                 {
-                    // TODO
+                    // check if product is null
+                    if (war.getItems().isEmpty()) {
+                        System.out.println("No products available in the warehouse!");
+                        break;
+                    }
+
+                    // table header
+                    System.out.printf("%-30s %-15s %-10s %-15s\n", "Product Name", "Price (RM)", "Quantity", "Total Value (RM)");
+                    System.out.println("--------------------------------------------------------------------------");
+
+                    // print products
+                    for (Product product : war.getItems()) {
+                        System.out.printf("%-30s RM%-13.2f %-10d RM%-13.2f\n",
+                                product.getName(),
+                                product.getPrice(),
+                                product.getQuantity(),
+                                product.totalValue());
+                    }
+
+                    System.out.println();
                     break;
                 }
                 case 4: // ADD PRODUCT
                 {
-                    //TODO
+                    // add product function
+                    warehouseAddProduct(war);
                     break;
                 }
                 case 5: // EDIT PRODUCT
                 {
-                    //TODO
+                    // edit product function
+                    warehouseEditProduct(war);
                     break;
                 }
                 case 6: // REMOVE PRODUCT
                 {
-                    //TODO
+                    // remove product function
+                    warehouseRemoveProduct(war);
                     break;
                 }
                 case 7: // DISPLAY SUBSCRIBED SUPPLIERS
                 {
-                    // TODO
+                    // check if there is supplier
+                    if (war.getSuppliers().isEmpty()) {
+                        System.out.println("No subscribed suppliers!");
+                    } else {
+                        // table header
+                        System.out.printf("%-15s %-20s %-30s\n", "Supplier ID", "Supplier Name", "Location");
+                        System.out.println("--------------------------------------------------------------");
+
+                        // print supplier
+                        for (Supplier supplier : war.getSuppliers()) {
+                            System.out.printf("%-15s %-20s %-30s\n", supplier.getId(), supplier.getName(), supplier.getLocation());
+                        }
+                    }
+
+                    System.out.println();
                     break;
                 }
                 case 8: // SUBSCRIBE SUPPLIER
                 {
                     // prompt id, existence check, append to subscribed and save file
-
-                    // TODO
+                    // subscribe function
+                    warehouseSubscribeSupplier(war);
                     break;
                 }
                 case 9: // UNSUBSCRIBE SUPPLIER
                 {
                     // prompt id, existence check, remove from subscribed and save file
-
-                    // TODO
+                    // unsubscribe function
+                    warehouseUnsubscribeSupplier(war);
                     break;
                 }
                 case 10: // TRANSACTION MENU
@@ -1038,6 +1231,456 @@ public class Main {
                 default:
                     break;
             }
+        }
+    }
+
+    private static void warehouseEditMenu(Warehouse war, Account acc) {
+        // display menu
+        warehouseEditMenu.setHeader(String.format("Currently editing [%s] as [%s].", war.getId(), acc.getUsername()));
+        int editChoice = -1;
+
+        while (editChoice != 0) {
+            editChoice = warehouseEditMenu.prompt();
+
+            switch (editChoice) {
+                case 1: { // change warehouse name
+                    System.out.println("Current Warehouse Name: " + war.getName());
+                    System.out.print("Enter new warehouse name: ");
+                    String newName = sc.nextLine();
+
+                    // validate name
+                    if (newName.isEmpty()) {
+                        System.out.println("Enter a valid warehouse name!");
+                        break;
+                    }
+
+                    // check to confirm
+                    String confirm;
+                    System.out.println("New Warehouse Name: " + newName);
+                    do {
+                        System.out.print("Are you sure you want to update the name? (Y/N): ");
+                        confirm = sc.nextLine().toLowerCase();
+                    } while (!confirm.equals("y") && !confirm.equals("n"));
+
+                    if (confirm.equals("y")) {
+                        war.setName(newName);
+                        try {
+                            FileHandler.writeObjectToFile(war, Main.dirs.get("warehouses") + war.getId() + ".json");
+                            System.out.println("Warehouse name updated successfully.");
+                        } catch (JsonProcessingException e) {
+                            System.out.println("Error updating warehouse name.");
+                        }
+                    } else {
+                        System.out.println("Warehouse name update cancelled.");
+                    }
+
+                    break;
+                }
+
+                case 2: { // change warehouse address
+                    Address newAddress = new Address();
+                    System.out.println("Current Warehouse Location: " + war.getLocation());
+
+                    System.out.println("\nNew Warehouse Location: ");
+
+                    // enter new unit no and validate
+                    System.out.print("Enter new Unit No: ");
+                    String unitNo = sc.nextLine();
+                    if (unitNo.isEmpty()) {
+                        System.out.println("Unit No cannot be empty.");
+                        break;
+                    }
+                    newAddress.setUnit(unitNo);
+
+                    // enter new building and validate
+                    System.out.print("Enter new Building: ");
+                    String building = sc.nextLine();
+                    if (building.isEmpty()) {
+                        System.out.println("Building name cannot be empty.");
+                        break;
+                    }
+                    newAddress.setBuilding(building);
+
+                    // enter new street and validate
+                    System.out.print("Enter new Street: ");
+                    String street = sc.nextLine();
+                    if (street.isEmpty()) {
+                        System.out.println("Street name cannot be empty.");
+                        break;
+                    }
+                    newAddress.setStreet(street);
+
+                    // enter new town and validate
+                    System.out.print("Enter new Town: ");
+                    String town = sc.nextLine();
+                    if (town.isEmpty()) {
+                        System.out.println("Town name cannot be empty.");
+                        break;
+                    }
+                    newAddress.setTown(town);
+
+                    // enter new state and validate
+                    System.out.print("Enter new State: ");
+                    String state = sc.nextLine();
+                    if (state.isEmpty()) {
+                        System.out.println("State name cannot be empty.");
+                        break;
+                    }
+                    newAddress.setState(state);
+
+                    // enter new postal code and validate
+                    System.out.print("Enter new Postal Code: ");
+                    int postalCode = sc.nextInt();
+                    if (postalCode <= 0 || postalCode > 999999) {
+                        System.out.println("Postal code must be a positive number and less than 6 digits.");
+                        break;
+                    }
+                    newAddress.setPostalCode(postalCode);
+
+                    // check to confirm to change
+                    String confirm;
+                    System.out.println("\nNew Address:");
+                    System.out.println(newAddress.toString());
+                    do {
+                        System.out.print("Are you sure you want to update the address? (Y/N): ");
+                        confirm = sc.nextLine().toLowerCase();
+                    } while (!confirm.equals("y") && !confirm.equals("n"));
+
+                    if (confirm.equals("y")) {
+                        war.setLocation(newAddress);
+                        try {
+                            FileHandler.writeObjectToFile(war, Main.dirs.get("warehouses") + war.getId() + ".json");
+                            System.out.println("Warehouse location updated successfully.");
+                        } catch (JsonProcessingException e) {
+                            System.out.println("Error updating warehouse location.");
+                        }
+                    } else {
+                        System.out.println("Saving cancelled!");
+                    }
+
+                    break;
+                }
+
+                default: {
+                    System.out.println("Please enter a valid option!\n");
+                    break;
+                }
+            }
+        }
+    }
+
+    private static void warehouseAddProduct(Warehouse war) {
+        char cont = 'y';
+
+        // continue loop to add product
+        do {
+            System.out.print("Enter new product name: ");
+            String name = sc.nextLine();
+
+            System.out.print("Enter new product price: RM");
+            double price = sc.nextDouble();
+            sc.nextLine();
+
+            System.out.print("Enter new product quantity: ");
+            int quantity = sc.nextInt();
+            sc.nextLine();
+
+            // validate the inputs
+            if (name.isEmpty() || price <= 0 || quantity <= 0) {
+                System.out.println("Invalid product information!\n");
+                break;
+            }
+
+            // check to confirm to add
+            String confirmation;
+            System.out.printf("%-20s %-10s %-10s\n", "Product Name", "Price", "Quantity");
+            System.out.printf("%-20s RM%-10.2f %-10d\n", name, price, quantity);
+            do {
+                System.out.print("Do you want to add this product? (Y/N): ");
+                confirmation = sc.nextLine().trim().toLowerCase();
+            } while (!confirmation.equals("y") && !confirmation.equals("n"));
+
+            if (confirmation.equals("y")) {
+                // save new product to warehouse
+                war.addProduct(new Product(name, price, quantity));
+
+                try {
+                    FileHandler.writeObjectToFile(war, Main.dirs.get("warehouses") + war.getId() + ".json");
+                    System.out.println("Product added successfully.");
+                } catch (JsonProcessingException e) {
+                    System.out.println("Error saving product to warehouse.");
+                }
+            } else {
+                System.out.println("Product addition canceled.");
+                break;
+            }
+
+            // check if user want to add more
+            String response;
+            do {
+                System.out.print("Do you want to add another product? (Y/N): ");
+                response = sc.nextLine().toLowerCase();
+                if (!response.equals("y") && !response.equals("n")) {
+                    System.out.println("Invalid input. Please enter 'Y' for yes or 'N' for no.");
+                }
+            } while (!response.equals("y") && !response.equals("n"));
+
+            // continue if the user answers 'y'
+            cont = response.charAt(0);
+        } while (cont == 'y');
+
+        System.out.println();
+    }
+
+    private static void warehouseEditProduct(Warehouse war) {
+        char cont = 'y';
+
+        // loop to edit more product
+        do {
+            System.out.print("Enter the product name to edit: ");
+            String productName = sc.nextLine();
+
+            // check if the product exists
+            Product product = war.getProductByName(productName);
+            if (product == null) {
+                System.out.println("Product not found. Please try again.\n");
+                break;
+            }
+
+            // display editing product details
+            System.out.printf("\nEditing Product: %s\n", product.getName());
+            System.out.printf("%-20s %-15s %-10s\n", "Product Name", "Price", "Quantity");
+            System.out.println("=============================================");
+            System.out.printf("%-20s RM%-13.2f %-10d\n", product.getName(), product.getPrice(), product.getQuantity());
+
+            // ask if user wants to edit product
+            String editConfirmation;
+            do {
+                System.out.print("Do you want to edit this product? (Y/N): ");
+                editConfirmation = sc.nextLine().toLowerCase();
+            } while (!editConfirmation.equals("y") && !editConfirmation.equals("n"));
+
+            if (editConfirmation.equals("y")) {
+                // get existing product details
+                String newName = product.getName();
+                double newPrice = product.getPrice();
+                int newQuantity = product.getQuantity();
+
+                // edit product name
+                System.out.print("Enter new product name (or press Enter to keep the current name): ");
+                String nameInput = sc.nextLine();
+                if (!nameInput.isEmpty()) {
+                    newName = nameInput;
+                }
+
+                // edit product price
+                System.out.print("Enter new product price (or press Enter to keep the current price): RM");
+                // use string to check input is null or not
+                String priceInput = sc.nextLine();
+                if (!priceInput.isEmpty()) {
+                    try {
+                        // parse string into double
+                        newPrice = Double.parseDouble(priceInput);
+
+                        //validate input
+                        if (newPrice <= 0) {
+                            System.out.println("Invalid price!");
+                            break;
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid price format!");
+                        break;
+                    }
+                }
+
+                // edit product quantity
+                System.out.print("Enter new product quantity (or press Enter to keep the current quantity): ");
+                String quantityInput = sc.nextLine();
+                // use string to check input is null or not
+                if (!quantityInput.isEmpty()) {
+                    try {
+                        // parse string into int
+                        newQuantity = Integer.parseInt(quantityInput);
+
+                        //validate input
+                        if (newQuantity <= 0) {
+                            System.out.println("Invalid quantity!");
+                            break;
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid quantity format!");
+                        break;
+                    }
+                }
+
+                // print the new product details and ask for confirmation
+                System.out.println("\nEdited product:");
+                System.out.printf("%-20s %-15s %-10s\n", "Product Name", "Price", "Quantity");
+                System.out.println("=============================================");
+                System.out.printf("%-20s RM%-13.2f %-10d\n", newName, newPrice, newQuantity);
+
+                // check to confirm to edit
+                String confirmation;
+                do {
+                    System.out.print("Do you want to save these changes? (Y/N): ");
+                    confirmation = sc.nextLine().toLowerCase();
+                } while (!confirmation.equals("y") && !confirmation.equals("n"));
+
+                if (confirmation.equals("y")) {
+                    product.setName(newName);
+                    product.setPrice(newPrice);
+                    product.setQuantity(newQuantity);
+
+                    try {
+                        FileHandler.writeObjectToFile(war, Main.dirs.get("warehouses") + war.getId() + ".json");
+                        System.out.println("Product updated successfully.");
+                    } catch (JsonProcessingException e) {
+                        System.out.println("Error saving changes to the warehouse.");
+                    }
+                } else {
+                    System.out.println("No changes made to this product.");
+                }
+            } else {
+                System.out.println("Product editing cancelled.");
+            }
+
+            // check if user wants to edit another product
+            String response;
+            do {
+                System.out.print("Do you want to edit another product? (Y/N): ");
+                response = sc.nextLine().toLowerCase();
+            } while (!response.equals("y") && !response.equals("n"));
+
+            // continue if the user answers 'y'
+            cont = response.charAt(0);
+        } while (cont == 'y');
+
+        System.out.println();
+    }
+
+    private static void warehouseRemoveProduct(Warehouse war) {
+        System.out.print("Enter the product name to remove: ");
+        String productName = sc.nextLine();
+
+        // check if the product exists
+        Product product = war.getProductByName(productName);
+        if (product != null) {
+            // display the product details
+            System.out.printf("\nRemoving Product: %s\n", product.getName());
+            System.out.printf("%-20s %-15s %-10s\n", "Product Name", "Price", "Quantity");
+            System.out.println("=============================================");
+            System.out.printf("%-20s RM%-13.2f %-10d\n", product.getName(), product.getPrice(), product.getQuantity());
+
+            // ask for confirmation
+            String confirm;
+            do {
+                System.out.print("Are you sure you want to remove this product? (Y/N): ");
+                confirm = sc.nextLine().toLowerCase();
+            } while (!confirm.equals("y") && !confirm.equals("n"));
+
+            if (confirm.equals("y")) {
+                // remove product
+                war.removeProductByName(productName);
+
+                try {
+                    FileHandler.writeObjectToFile(war, Main.dirs.get("warehouses") + war.getId() + ".json");
+                    System.out.println("Product removed successfully.");
+                } catch (JsonProcessingException e) {
+                    System.out.println("Error saving changes to the warehouse.");
+                }
+            } else {
+                System.out.println("Product removal cancelled.");
+            }
+        } else {
+            System.out.println("Product not found. Please try again.\n");
+        }
+    }
+
+    private static void warehouseSubscribeSupplier(Warehouse war) {
+        System.out.print("Enter supplier ID to subscribe: ");
+        String supplierID = sc.nextLine();
+
+        // check if supplier exists
+        Supplier supplier = new Supplier();
+        try {
+            supplier = FileHandler.readObjectFromFile(supplier, Main.dirs.get("suppliers") + supplierID + ".json");
+        } catch (JsonProcessingException _) {}
+
+        if (supplier.getId() != null) {
+            // display the supplier details
+            System.out.println("\nSupplier to Subscribe:");
+            System.out.println("Supplier ID: " + supplier.getId());
+            System.out.println("Supplier Name: " + supplier.getName());
+            System.out.println("Supplier Location: " + supplier.getLocation());
+            System.out.println();
+
+            // ask for confirmation
+            String confirm;
+            do {
+                System.out.print("Do you want to subscribe to this supplier? (Y/N): ");
+                confirm = sc.nextLine().toLowerCase();
+            } while (!confirm.equals("y") && !confirm.equals("n"));
+
+            if (confirm.equals("y")) {
+                // subscribe supplier
+                war.subscribeSupplier(supplier);
+
+                // save to file
+                try {
+                    FileHandler.writeObjectToFile(war, Main.dirs.get("warehouses") + war.getId() + ".json");
+                    System.out.println("Supplier subscribed successfully!\n");
+                } catch (JsonProcessingException e) {
+                    System.out.println("Error subscribing supplier.");
+                }
+            } else {
+                System.out.println("Subscription cancelled!");
+            }
+
+        } else {
+            System.out.println("Supplier not found!\n");
+        }
+    }
+
+    private static void warehouseUnsubscribeSupplier(Warehouse war) {
+        System.out.print("Enter supplier ID to unsubscribe: ");
+        String supplierID = sc.nextLine();
+
+        // find supplier in warehouse
+        Supplier supplier = war.getSupplierByID(supplierID);
+
+        // check if supplier exists
+        if (supplier != null) {
+            // display the supplier details
+            System.out.println("\nSupplier Details to Unsubscribe:");
+            System.out.println("Supplier ID: " + supplier.getId());
+            System.out.println("Supplier Name: " + supplier.getName());
+            System.out.println("Supplier Location: " + supplier.getLocation());
+            System.out.println();
+
+            // ask for confirmation
+            String confirm;
+            do {
+                System.out.print("Do you want to unsubscribe from this supplier? (Y/N): ");
+                confirm = sc.nextLine().toLowerCase();
+            } while (!confirm.equals("y") && !confirm.equals("n"));
+
+            if (confirm.equals("y")) {
+                // unsubscribe supplier
+                war.unsubscribeSupplierByID(supplierID);
+
+                // save to file
+                try {
+                    FileHandler.writeObjectToFile(war, Main.dirs.get("warehouses") + war.getId() + ".json");
+                    System.out.println("Supplier unsubscribed successfully!\n");
+                } catch (JsonProcessingException e) {
+                    System.out.println("Error unsubscribing supplier!");
+                }
+            } else {
+                System.out.println("Unsubscription cancelled!");
+            }
+
+        } else {
+            System.out.println("Supplier not found in subscribed suppliers!\n");
         }
     }
 }

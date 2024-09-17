@@ -45,6 +45,10 @@ public class Product {
         this.quantity -= amt;
     }
 
+    public void setQuantity(int amt) {
+        this.quantity = amt;
+    }
+
     public double totalValue() {
         return price * quantity;
     }
