@@ -978,7 +978,7 @@ public class Main {
     }
 
     private static void productEditMenu(Product prod) {
-        transactionMenu.setHeader(String.format("Edit Product menu for [%s].", prod.getName()));
+        productEditMenu.setHeader(String.format("Edit Product menu for [%s].", prod.getName()));
 
 
         int choice = -1;
