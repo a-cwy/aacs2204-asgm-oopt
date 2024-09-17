@@ -82,6 +82,11 @@ public class Main {
             "Edit quantity",
     });
 
+    private static final Menu quantityEditMenu = new Menu("Currently viewing [product] quantity.", new String[]{
+            "Add quantity",
+            "Reduce quantity",
+    });
+
     public static void main(String[] args) {
         {   // INIT BLOCK
             dirs.put("data", "data\\");
@@ -257,12 +262,14 @@ public class Main {
                 case 2: // EDIT INFO
                 {
                     supplierEditMenu(sup);
+                    // write file in editmenu
                     break;
                 }
                 case 3: // DISPLAY PRODUCTS
                 {
+                    //i think ok
                     sup.printInventory(sup);
-                    // TODO
+
                     break;
                 }
                 case 4: // ADD PRODUCT
@@ -290,16 +297,56 @@ public class Main {
                 {
                     System.out.print("Enter product name > ");
                     String name = sc.nextLine();
+                    try{
+                        sup.getProductByName(name);
+                    }catch(NullPointerException _){
+                        System.out.println("Product does not exist");
+                        return;
+                    }
 
-                    System.out.println("Product name: " + sup.getProductByName(name).getName());
-                    System.out.println("Product price: " + sup.getProductByName(name).getPrice());
-                    System.out.println("Product quantity: " + sup.getProductByName(name).getQuantity());
-                    //TODO
+                    productEditMenu(sup.getProductByName(name));
+                    try {
+                        FileHandler.writeObjectToFile(sup, Main.dirs.get("suppliers") + sup.getId() + ".json");
+                    } catch (JsonProcessingException _) {}
+
                     break;
                 }
                 case 6: // REMOVE PRODUCT
                 {
-                    //TODO
+                    System.out.print("Enter product name > ");
+                    String name = sc.nextLine();
+                    try{
+                        sup.getProductByName(name);
+                    }catch(NullPointerException _){
+                        System.out.println("Product does not exist");
+                        return;
+                    }
+                    System.out.println("Product name: "+ sup.getProductByName(name).getName());
+                    System.out.println("Product price: "+ sup.getProductByName(name).getPrice());
+                    System.out.println("Product quantity: "+ sup.getProductByName(name).getQuantity());
+                    System.out.println("Are you sure to remove this product? ");
+                    System.out.println("(Y/N)");
+                    char answer;
+
+                    while(true){
+                        answer = sc.next().charAt(0);
+                        answer = Character.toUpperCase(answer);
+                        if (answer == 'Y') {
+                            sup.removeProductByName(name);
+                            try {
+                                FileHandler.writeObjectToFile(sup, Main.dirs.get("suppliers") + sup.getId() + ".json");
+                            } catch (JsonProcessingException _) {}
+                            break;
+                        } else if (answer == 'N') {
+                            System.out.println("Remove aborted");
+                            break;
+                        }
+                        else{
+                            System.out.println("Invalid choice");
+
+                        }
+                    }
+
                     break;
                 }
                 case 7: // TRANSACTION MENU
@@ -932,23 +979,61 @@ public class Main {
 
     private static void productEditMenu(Product prod) {
         transactionMenu.setHeader(String.format("Edit Product menu for [%s].", prod.getName()));
+
+
         int choice = -1;
         while (choice != 0) {
+            System.out.println("Product name: " + prod.getName());
+            System.out.println("Product price: " + prod.getPrice());
+            System.out.println("Product quantity: " + prod.getQuantity());
             choice = supplierEditMenu.prompt();
 
             switch (choice) {
                 case 1: // EDIT NAME
                 {
-
+                    System.out.print("New product name: ");
+                    prod.setName(sc.nextLine());
                     break;
                 }
-                case 2: // EDIT LOCATION
+                case 2: // EDIT PRICE
                 {
-
-
+                    System.out.print("New product price: ");
+                    prod.setPrice(sc.nextDouble());
                     break;
                 }
                 case 3: //Edit quantity
+                {
+                    quantityEditMenu(prod);
+                    break;
+                }
+
+                default:
+                    break;
+            }
+        }
+    }
+    private static void quantityEditMenu(Product prod) {
+        quantityEditMenu.setHeader(String.format("Editing quantity for pdocut [%s].", prod.getName()));
+
+
+        int choice = -1;
+        while (choice != 0) {
+            choice = quantityEditMenu.prompt();
+
+            switch (choice) {
+                case 1: //Add quantity
+                {
+                    System.out.print("Quantity to add: ");
+                    prod.addQuantity(sc.nextInt());
+
+                    break;
+                }
+                case 2: // reduce quantity
+                {
+                    System.out.print("Quantity to reduce: ");
+                    prod.reduceQuantity(sc.nextInt());
+                    break;
+                }
 
                 default:
                     break;
