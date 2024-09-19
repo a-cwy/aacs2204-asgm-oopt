@@ -2,19 +2,21 @@ package root;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class Branch extends Inventory {
 
     private final String id;
     private String name;
-    private final Address location;
+    private Address location;
     private final ArrayList<Warehouse> warehouses;
     private final ArrayList<Product> items;
+    private List<Warehouse> subscribedWarehouses;
 
     public Branch () {
         this.id = null;
         this.name = null;
-        this.location = new Address();
+        this.location = null;
         this.warehouses = new ArrayList<>();
         this.items = new ArrayList<>();
     }
@@ -114,8 +116,7 @@ public class Branch extends Inventory {
     }
 
 //    public void addProduct(Product product,int amt){
-//        product.addQuantity(amt);
-//    }
+//        product.addQuantity(amt);}
 //
 //    public Product getProductById(String id){
 //        for (Product product : items){
@@ -189,6 +190,10 @@ public class Branch extends Inventory {
         return name;
     }
 
+    public Address getLocation() {
+        return location;
+    }
+
     public ArrayList<Warehouse> getWarehouses() {
         return warehouses;
     }
@@ -201,4 +206,23 @@ public class Branch extends Inventory {
         this.name = name;
     }
 
+    public void setLocation(Address location){
+        this.location = location;
+    }
+
+    public List<Warehouse> getSubscribedWarehouses() {
+        return subscribedWarehouses;
+    }
+
+    public void setSubscribedWarehouses(List<Warehouse> subscribedWarehouses) {
+        this.subscribedWarehouses = subscribedWarehouses;
+    }
+
+    /*public void printInventory(Branch br){
+        Main.clearScreen();
+        System.out.println("Inventory of branch " + br.getId());
+        System.out.printf("%2s %-20s %-10s %-10s\n", "","Name", "Price", "Quantity");
+        super.printInventory();
+
+    }*/
 }

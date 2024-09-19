@@ -63,6 +63,13 @@ public class Main {
             "Unsubscribe warehouse",
             "Transactions"
     });
+
+    private static final Menu branchEditMenu = new Menu("Currently viewing [branch].", new String[]{
+            "Edit name",
+            "Edit Location"
+    });
+
+
     private static final Menu transactionMenu = new Menu("Transactions for [inventory].", new String[]{
             "Create transaction",
             "Update transaction",
@@ -210,7 +217,15 @@ public class Main {
                     //
                     // call branchMenu(br, acc);
 
-                    // TODO
+                    System.out.println("Enter Branch id : ");
+                    String branchID = sc.nextLine();
+
+                    Branch br = new Branch();
+                    try{
+                        br = FileHandler.readObjectFromFile(br, Main.dirs.get("branch") + branchID + ".json");
+                    } catch (JsonProcessingException _) {}
+                    branchMenu(br, acc);
+
                     break;
                 }
                 case 4: // ADD NEW SUPPLIER
@@ -377,6 +392,53 @@ public class Main {
                     }
 
                     break;
+                }
+
+                case 6: { // ADD NEW Branch
+                    System.out.print("Enter ID for new branch > ");
+                    String branchID = sc.nextLine();
+
+                    // Check if branch with the same ID already exists
+                    try {
+                        Branch br = new Branch();
+                        br = FileHandler.readObjectFromFile(br, Main.dirs.get("branches") + branchID + ".json");
+                        if (br.getId() != null) {
+                            System.out.println("ID already taken.");
+                            break;
+                        }
+                    } catch (JsonProcessingException _) {}
+
+                    System.out.print("Enter name for branch > ");
+                    String branchName = sc.nextLine();
+
+                    System.out.println("Enter location for branch,");
+                    Address branchLocation = new Address();
+                    System.out.print("\tUnit > ");
+                    branchLocation.setUnit(sc.nextLine());
+                    System.out.print("\tBuilding > ");
+                    branchLocation.setBuilding(sc.nextLine());
+                    System.out.print("\tStreet > ");
+                    branchLocation.setStreet(sc.nextLine());
+                    System.out.print("\tTown > ");
+                    branchLocation.setTown(sc.nextLine());
+                    System.out.print("\tState > ");
+                    branchLocation.setState(sc.nextLine());
+                    System.out.print("\tPostal Code > ");
+                    branchLocation.setPostalCode(sc.nextInt());
+                    sc.nextLine();  // Consume the newline
+
+                    Branch br = new Branch(branchID, branchName, branchLocation, new Product[]{});
+
+                    try {
+                        // Save the new branch to a file
+                        FileHandler.writeObjectToFile(br, Main.dirs.get("branches") + branchID + ".json");
+                        System.out.println("Branch added successfully!");
+                    } catch (JsonProcessingException _) {
+                        System.out.println("Error while saving the new branch.");
+                    }
+
+                    break;
+
                 }
                 default:
                     break;
@@ -644,51 +706,121 @@ public class Main {
             switch (choice) {
                 case 1: // DISPLAY INFO
                 {
-                    // TODO
+                    System.out.println("Branch id : " + br.getId());
+                    System.out.println("Branch name : " + br.getName());
+                    System.out.println("Location : " + br.getLocation());
                     break;
                 }
                 case 2: // EDIT INFO
                 {
-                    // TODO
+                    branchEditMenu(br);
                     break;
                 }
                 case 3: // DISPLAY PRODUCTS
                 {
-                    // TODO
+                    // print products
+                    System.out.printf("%-30s %-15s %-10s %-15s\n", "Product Name", "Price (RM)", "Quantity", "Total Value (RM)");
+                    System.out.println("--------------------------------------------------------------------------");
+
+                    for (Product product : br.getItems()) {
+                        System.out.printf("%-30s RM%-13.2f %-10d RM%-13.2f\n",
+                                product.getName(),
+                                product.getPrice(),
+                                product.getQuantity(),
+                                product.totalValue());
+                    }
+
+                    System.out.println(); // Add an empty line
                     break;
                 }
                 case 4: // ADD PRODUCT
                 {
+                    System.out.print("Enter product name > ");
+                    String name = sc.nextLine();
+
+                    System.out.print("Enter product price > RM");
+                    double price = sc.nextDouble();
+                    sc.nextLine();
+
+                    System.out.print("Enter quantity > ");
+                    int quantity = sc.nextInt();
+                    sc.nextLine();
+
+                    br.addProduct(new Product(name, price, quantity));
+
+                    try {
+                        FileHandler.writeObjectToFile(br, Main.dirs.get("branch") + br.getId() + ".json");
+                    } catch (JsonProcessingException _) {}
                     //TODO
                     break;
                 }
                 case 5: // EDIT PRODUCT
                 {
-                    //TODO
+                    System.out.print("Enter product name > ");
+                    String name = sc.nextLine();
+                    try{
+                        br.getProductByName(name);
+                    }catch(NullPointerException _){
+                        System.out.println("Product does not exist");
+                        return;
+                    }
+
+                    productEditMenu(br.getProductByName(name));
+                    try {
+                        FileHandler.writeObjectToFile(br, Main.dirs.get("branch") + br.getId() + ".json");
+                    } catch (JsonProcessingException _) {}
+
                     break;
                 }
                 case 6: // REMOVE PRODUCT
                 {
+                    System.out.println("Enter product name to remove:");
+                    String prodName = sc.nextLine();
+
+                    br.removeProductByName(prodName);
+
+                    System.out.println(prodName + " removed successfully. ");
+
                     //TODO
                     break;
                 }
                 case 7: // DISPLAY SUBSCRIBED WAREHOUSES
                 {
-                    // TODO
+                    System.out.println("Subscribed Warehouses");
+                    for (Warehouse warehouse : br.getSubscribedWarehouses()){
+                        System.out.println("Warehouse ID: " + warehouse.getId());
+                        System.out.println("Warehouse Name: " + warehouse.getName());
+                        System.out.println("Location: " + warehouse.getLocation().toString());
+                        System.out.println("===================================");
+                    }
                     break;
                 }
                 case 8: // SUBSCRIBE WAREHOUSE
                 {
                     // prompt id, existence check, append to subscribed and save file
 
-                    // TODO
+                    branchSubscribeWarehouseById(br);
                     break;
                 }
                 case 9: // UNSUBSCRIBE WAREHOUSE
                 {
                     // prompt id, existence check, remove from subscribed and save file
+                    branchUnsubscribeWarehouseByID(br);
 
-                    // TODO
+                    //System.out.print("Enter the warehouse id to unsubscribe: ");
+                    //String warehouseId = sc.nextLine();
+//
+                    //// Attempt to unsubscribe by ID
+                    //br.unsubscribeWarehouseById(warehouseId);
+                    //System.out.println("Unsubscribed warehouse by ID: " + warehouseId);
+//
+                    //// Save the updated branch data
+                    //try {
+                    //    FileHandler.writeObjectToFile(br, Main.dirs.get("branch") + br.getId() + ".json");
+                    //} catch (JsonProcessingException e) {
+                    //    System.out.println("Failed to save branch data.");
+                    //}
+
                     break;
                 }
                 case 10: // TRANSACTION MENU
@@ -1683,4 +1815,159 @@ public class Main {
             System.out.println("Supplier not found in subscribed suppliers!\n");
         }
     }
+
+    private static void branchEditMenu(Branch br) {
+        branchEditMenu.setHeader(String.format("Currently viewing [%s].", br.getId()));
+
+        int choice = -1;
+        while (choice != 0) {
+            choice = branchEditMenu.prompt();
+
+            switch (choice) {
+                case 1: // EDIT NAME
+                {
+                    System.out.println("Current branch name: " + br.getName());
+                    System.out.print("New branch name: ");
+                    br.setName(sc.nextLine());
+                    System.out.print("Successfully updated branch name");
+                    try {
+                        FileHandler.writeObjectToFile(br, Main.dirs.get("branch") + br.getId() + ".json");
+                    } catch (JsonProcessingException _) {
+                        System.out.println("Failed to update branch (Couldn't save branch as file).");
+                        return;
+                    }
+                    // TODO
+                    break;
+                }
+                case 2: // EDIT LOCATION
+                {
+                    Address temp = new Address();
+                    System.out.println("Current branch address: " + br.getLocation());
+                    System.out.println("New branch address: ");
+
+                    System.out.print("Enter unit no: ");
+                    temp.setUnit(sc.nextLine());
+
+                    System.out.print("Enter building: ");
+                    temp.setBuilding(sc.nextLine());
+
+                    System.out.print("Enter street: ");
+                    temp.setStreet(sc.nextLine());
+
+                    System.out.print("Enter town: ");
+                    temp.setTown(sc.nextLine());
+
+                    System.out.print("Enter state: ");
+                    temp.setState(sc.nextLine());
+
+                    System.out.print("Enter postal code: ");
+                    temp.setPostalCode(sc.nextInt());
+
+                    System.out.println("Successfully updated branch address");
+                    br.setLocation(temp);
+                    try {
+                        FileHandler.writeObjectToFile(br, Main.dirs.get("branch") + br.getId() + ".json");
+                    } catch (JsonProcessingException _) {
+                        System.out.println("Failed to update branch (Couldn't save branch as file).");
+                        break;
+                    }
+
+                    break;
+                }
+
+                default:
+                    break;
+            }
+        }
+    }
+
+    private static void branchSubscribeWarehouseById(Branch br) {
+        System.out.print("Enter warehouse ID to subscribe: ");
+        String warehouseID = sc.nextLine();
+
+        // Check if warehouse exists
+        Warehouse warehouse = new Warehouse();
+        try {
+            warehouse = FileHandler.readObjectFromFile(warehouse, Main.dirs.get("warehouses") + warehouseID + ".json");
+        } catch (JsonProcessingException _) {}
+
+        if (warehouse.getId() != null) {
+            // Display the warehouse details
+            System.out.println("\nWarehouse to Subscribe:");
+            System.out.println("Warehouse ID: " + warehouse.getId());
+            System.out.println("Warehouse Name: " + warehouse.getName());
+            System.out.println("Warehouse Location: " + warehouse.getLocation());
+            System.out.println();
+
+            // Ask for confirmation
+            String confirm;
+            do {
+                System.out.print("Do you want to subscribe to this warehouse? (Y/N): ");
+                confirm = sc.nextLine().toLowerCase();
+            } while (!confirm.equals("y") && !confirm.equals("n"));
+
+            if (confirm.equals("y")) {
+                // Subscribe to the warehouse
+                br.subscribeWarehouse(warehouse);
+
+                // Save to file
+                try {
+                    FileHandler.writeObjectToFile(br, Main.dirs.get("branch") + br.getId() + ".json");
+                    System.out.println("Warehouse subscribed successfully!\n");
+                } catch (JsonProcessingException e) {
+                    System.out.println("Error subscribing to the warehouse.");
+                }
+            } else {
+                System.out.println("Subscription cancelled!");
+            }
+
+        } else {
+            System.out.println("Warehouse not found!\n");
+        }
+    }
+
+    private static void branchUnsubscribeWarehouseByID(Branch br) {
+        System.out.print("Enter warehouse ID to unsubscribe: ");
+        String warehouseID = sc.nextLine();
+
+        // Find warehouse in the branch's subscribed warehouses
+        Warehouse warehouse = br.getWarehousesById(warehouseID);
+
+        // Check if warehouse exists
+        if (warehouse != null) {
+            // Display the warehouse details
+            System.out.println("\nWarehouse Details to Unsubscribe:");
+            System.out.println("Warehouse ID: " + warehouse.getId());
+            System.out.println("Warehouse Name: " + warehouse.getName());
+            System.out.println("Warehouse Location: " + warehouse.getLocation());
+            System.out.println();
+
+            // Ask for confirmation
+            String confirm;
+            do {
+                System.out.print("Do you want to unsubscribe from this warehouse? (Y/N): ");
+                confirm = sc.nextLine().toLowerCase();
+            } while (!confirm.equals("y") && !confirm.equals("n"));
+
+            if (confirm.equals("y")) {
+                // Unsubscribe warehouse
+                br.unsubscribeWarehouseById(warehouseID);
+
+                // Save to file
+                try {
+                    FileHandler.writeObjectToFile(br, Main.dirs.get("branch") + br.getId() + ".json");
+                    System.out.println("Warehouse unsubscribed successfully!\n");
+                } catch (JsonProcessingException e) {
+                    System.out.println("Error unsubscribing warehouse!");
+                }
+            } else {
+                System.out.println("Unsubscription cancelled!");
+            }
+
+        } else {
+            System.out.println("Warehouse not found in subscribed warehouses!\n");
+        }
+    }
+
 }
+
