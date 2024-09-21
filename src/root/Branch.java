@@ -2,7 +2,6 @@ package root;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class Branch extends Inventory {
 
@@ -11,7 +10,6 @@ public class Branch extends Inventory {
     private Address location;
     private final ArrayList<Warehouse> warehouses;
     private final ArrayList<Product> items;
-    private List<Warehouse> subscribedWarehouses;
 
     public Branch () {
         this.id = null;
@@ -68,7 +66,7 @@ public class Branch extends Inventory {
         }
     }
 
-    public Warehouse getWarehousesById(String id){
+    public Warehouse findWarehousesById(String id){
         for (Warehouse warehouse : warehouses){
             if (warehouse.getId().equals(id)){
                 return warehouse;
@@ -77,7 +75,7 @@ public class Branch extends Inventory {
         throw new IllegalArgumentException("Invalid Warehouse ID"); // Invalid input values
     }
 
-    public Warehouse getWarehousesByName(String name){
+    public Warehouse findWarehousesByName(String name){
         for (Warehouse warehouse : warehouses){
             if (warehouse.getName().equals(name)){ // compare getName and name
                 return warehouse;
@@ -86,11 +84,11 @@ public class Branch extends Inventory {
         throw new IllegalArgumentException("Invalid Warehouse name"); //Invalid input values
     }
 
-    public Warehouse unsubscribeWarehouseById(String id){
+    public void unsubscribeWarehouseById(String id){
         for (Warehouse warehouse : warehouses){
             if (warehouse.getId().equals(id)){
                 warehouses.remove(warehouse);
-                return  warehouse;
+                return;
             }
         }
         throw new IllegalArgumentException("Invalid Warehouse ID");
@@ -208,14 +206,6 @@ public class Branch extends Inventory {
 
     public void setLocation(Address location){
         this.location = location;
-    }
-
-    public List<Warehouse> getSubscribedWarehouses() {
-        return subscribedWarehouses;
-    }
-
-    public void setSubscribedWarehouses(List<Warehouse> subscribedWarehouses) {
-        this.subscribedWarehouses = subscribedWarehouses;
     }
 
     /*public void printInventory(Branch br){

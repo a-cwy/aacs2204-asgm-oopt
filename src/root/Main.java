@@ -181,8 +181,13 @@ public class Main {
                     try{
                         temp = FileHandler.readObjectFromFile(temp, Main.dirs.get("suppliers") + supplierID + ".json");
                     } catch (JsonProcessingException _) {}
-                    supplierMenu(temp, acc);
 
+                    if (temp.getId() == null) {
+                        System.out.println("ID does not exist.\n");
+                        break;
+                    }
+
+                    supplierMenu(temp, acc);
                     break;
                 }
                 case 2: // VIEW WAREHOUSE
@@ -218,13 +223,21 @@ public class Main {
                     //
                     // call branchMenu(br, acc);
 
-                    System.out.println("Enter Branch id : ");
+                    System.out.print("Enter Branch id : ");
                     String branchID = sc.nextLine();
 
                     Branch br = new Branch();
                     try{
-                        br = FileHandler.readObjectFromFile(br, Main.dirs.get("branch") + branchID + ".json");
-                    } catch (JsonProcessingException _) {}
+                        br = FileHandler.readObjectFromFile(br, Main.dirs.get("branches") + branchID + ".json");
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                    }
+
+                    if (br.getId() == null) {
+                        System.out.println("ID does not exist.\n");
+                        break;
+                    }
+
                     branchMenu(br, acc);
 
                     break;
@@ -501,11 +514,9 @@ public class Main {
                 {
                     System.out.print("Enter product name > ");
                     String name = sc.nextLine();
-                    try{
-                        sup.getProductByName(name);
-                    }catch(NullPointerException _){
+                    if (sup.getProductByName(name) == null){
                         System.out.println("Product does not exist");
-                        return;
+                        break;
                     }
 
                     productEditMenu(sup.getProductByName(name));
@@ -519,11 +530,9 @@ public class Main {
                 {
                     System.out.print("Enter product name > ");
                     String name = sc.nextLine();
-                    try{
-                        sup.getProductByName(name);
-                    }catch(NullPointerException _){
+                    if (sup.getProductByName(name) == null){
                         System.out.println("Product does not exist");
-                        return;
+                        break;
                     }
                     System.out.println("Product name: "+ sup.getProductByName(name).getName());
                     System.out.println("Product price: "+ sup.getProductByName(name).getPrice());
@@ -533,7 +542,7 @@ public class Main {
                     char answer;
 
                     while(true){
-                        answer = sc.next().charAt(0);
+                        answer = sc.nextLine().charAt(0);
                         answer = Character.toUpperCase(answer);
                         if (answer == 'Y') {
                             sup.removeProductByName(name);
@@ -683,7 +692,7 @@ public class Main {
                     transactionMenu(war, acc);
 
                     try {
-                        FileHandler.writeObjectToFile(war, Main.dirs.get("suppliers") + war.getId() + ".json");
+                            FileHandler.writeObjectToFile(war, Main.dirs.get("warehouses") + war.getId() + ".json");
                     } catch (JsonProcessingException _) {
 
                         return;
@@ -787,8 +796,13 @@ public class Main {
                 }
                 case 7: // DISPLAY SUBSCRIBED WAREHOUSES
                 {
+                    if (br.getWarehouses().isEmpty()) {
+                        System.out.println("No subscribed suppliers!");
+                        break;
+                    }
+
                     System.out.println("Subscribed Warehouses");
-                    for (Warehouse warehouse : br.getSubscribedWarehouses()){
+                    for (Warehouse warehouse : br.getWarehouses()){
                         System.out.println("Warehouse ID: " + warehouse.getId());
                         System.out.println("Warehouse Name: " + warehouse.getName());
                         System.out.println("Location: " + warehouse.getLocation().toString());
@@ -829,7 +843,7 @@ public class Main {
                     transactionMenu(br, acc);
 
                     try {
-                        FileHandler.writeObjectToFile(br, Main.dirs.get("suppliers") + br.getId() + ".json");
+                        FileHandler.writeObjectToFile(br, Main.dirs.get("branches") + br.getId() + ".json");
                     } catch (JsonProcessingException _) {
                         return;
                     }
@@ -1309,10 +1323,12 @@ public class Main {
 
         int choice = -1;
         while (choice != 0) {
+
+
             System.out.println("Product name: " + prod.getName());
             System.out.println("Product price: " + prod.getPrice());
             System.out.println("Product quantity: " + prod.getQuantity());
-            choice = supplierEditMenu.prompt();
+            choice = productEditMenu.prompt();
 
             switch (choice) {
                 case 1: // EDIT NAME
@@ -1932,7 +1948,7 @@ public class Main {
         String warehouseID = sc.nextLine();
 
         // Find warehouse in the branch's subscribed warehouses
-        Warehouse warehouse = br.getWarehousesById(warehouseID);
+        Warehouse warehouse = br.findWarehousesById(warehouseID);
 
         // Check if warehouse exists
         if (warehouse != null) {
