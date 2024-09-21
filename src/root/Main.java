@@ -759,7 +759,7 @@ public class Main {
                     br.addProduct(new Product(name, price, quantity));
 
                     try {
-                        FileHandler.writeObjectToFile(br, Main.dirs.get("branch") + br.getId() + ".json");
+                        FileHandler.writeObjectToFile(br, Main.dirs.get("branches") + br.getId() + ".json");
                     } catch (JsonProcessingException _) {}
                     //TODO
                     break;
@@ -777,7 +777,7 @@ public class Main {
 
                     productEditMenu(br.getProductByName(name));
                     try {
-                        FileHandler.writeObjectToFile(br, Main.dirs.get("branch") + br.getId() + ".json");
+                        FileHandler.writeObjectToFile(br, Main.dirs.get("branches") + br.getId() + ".json");
                     } catch (JsonProcessingException _) {}
 
                     break;
@@ -1848,7 +1848,7 @@ public class Main {
                     br.setName(sc.nextLine());
                     System.out.print("Successfully updated branch name");
                     try {
-                        FileHandler.writeObjectToFile(br, Main.dirs.get("branch") + br.getId() + ".json");
+                        FileHandler.writeObjectToFile(br, Main.dirs.get("branches") + br.getId() + ".json");
                     } catch (JsonProcessingException _) {
                         System.out.println("Failed to update branch (Couldn't save branch as file).");
                         return;
@@ -1883,7 +1883,7 @@ public class Main {
                     System.out.println("Successfully updated branch address");
                     br.setLocation(temp);
                     try {
-                        FileHandler.writeObjectToFile(br, Main.dirs.get("branch") + br.getId() + ".json");
+                        FileHandler.writeObjectToFile(br, Main.dirs.get("branches") + br.getId() + ".json");
                     } catch (JsonProcessingException _) {
                         System.out.println("Failed to update branch (Couldn't save branch as file).");
                         break;
@@ -1929,7 +1929,7 @@ public class Main {
 
                 // Save to file
                 try {
-                    FileHandler.writeObjectToFile(br, Main.dirs.get("branch") + br.getId() + ".json");
+                    FileHandler.writeObjectToFile(br, Main.dirs.get("branches") + br.getId() + ".json");
                     System.out.println("Warehouse subscribed successfully!\n");
                 } catch (JsonProcessingException e) {
                     System.out.println("Error subscribing to the warehouse.");
@@ -1972,7 +1972,7 @@ public class Main {
 
                 // Save to file
                 try {
-                    FileHandler.writeObjectToFile(br, Main.dirs.get("branch") + br.getId() + ".json");
+                    FileHandler.writeObjectToFile(br, Main.dirs.get("branches") + br.getId() + ".json");
                     System.out.println("Warehouse unsubscribed successfully!\n");
                 } catch (JsonProcessingException e) {
                     System.out.println("Error unsubscribing warehouse!");
