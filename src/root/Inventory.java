@@ -49,13 +49,9 @@ abstract class  Inventory {
         }
 
         // if product already exists
-        if (temp.getName().equals(prod.getName()) && temp.getPrice() == prod.getPrice()) {
+        if (temp.getName().equals(prod.getName())) {
             temp.addQuantity(prod.getQuantity());
-            return;
         }
-
-        // if product exists with different price
-        System.out.println("Product already exists with different price.");
     }
 
     public Product getProductByName(String name){

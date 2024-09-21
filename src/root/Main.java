@@ -6,6 +6,7 @@ import root.util.FileHandler;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+
 public class Main {
     public static final Scanner sc = new Scanner(System.in);
     public static final Map<String, String> dirs = new HashMap<>();
@@ -107,7 +108,7 @@ public class Main {
             dirs.put("warehouses", "data\\warehouses\\");
             dirs.put("accounts", "accounts\\");
 
-            Init.setDirs(new ArrayList<String>(dirs.values()));
+            Init.setDirs(new ArrayList<>(dirs.values()));
             Init.run();
         }
 
@@ -370,7 +371,7 @@ public class Main {
                     System.out.println("\nPlease confirm the new Warehouse details:");
                     System.out.println("Warehouse ID: " + warehouseID);
                     System.out.println("Warehouse Name: " + warehouseName);
-                    System.out.println("Warehouse Location: " + warehouseAddress.toString());
+                    System.out.println("Warehouse Location: " + warehouseAddress);
 
                     // prompt for user input
                     do {
@@ -1472,7 +1473,7 @@ public class Main {
                     // check to confirm to change
                     String confirm;
                     System.out.println("\nNew Address:");
-                    System.out.println(newAddress.toString());
+                    System.out.println(newAddress);
                     do {
                         System.out.print("Are you sure you want to update the address? (Y/N): ");
                         confirm = sc.nextLine().toLowerCase();

@@ -11,10 +11,11 @@ public class Address {
 
     public Address(){}
 
-    public Address(String unit, String building, String street, String state, int postalCode){
+    public Address(String unit, String building, String street, String town, String state, int postalCode){
         this.unit = unit;
         this.building = building;
         this.street = street;
+        this.town = town;
         this.state = state;
         this.postalCode = postalCode;
     }
