@@ -94,14 +94,6 @@ public class Branch extends Inventory {
         throw new IllegalArgumentException("Invalid Warehouse ID");
     }
 
-    public Warehouse unsubscribeWarehouseByIndex(int index){
-        if (index >=0 && index < warehouses.size()){
-            return warehouses.remove(index);
-    }else{
-            throw new IndexOutOfBoundsException("Invalid Warehouse index");
-        }
-
-    }
 
     public Warehouse unsubscribeWarehouseByName(String name){
         for (Warehouse warehouse : warehouses){

@@ -58,9 +58,6 @@ public class Warehouse extends Inventory{
                 return null;
         }
 
-        public Supplier getSupplierByIndex(int index){
-                return suppliers.get(index);
-        }
 
         public void subscribeSupplier(Supplier sup) {
                 suppliers.add(sup);
@@ -86,12 +83,6 @@ public class Warehouse extends Inventory{
                 return null;
         }
 
-        public Supplier unsubscribeSupplierByIndex(int index) {
-                if (index >= 0 && index < suppliers.size()) {
-                        return suppliers.remove(index);
-                }
-                return null;
-        }
 
         @Override
         public String toString() {
