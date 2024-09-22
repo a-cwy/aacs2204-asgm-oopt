@@ -47,12 +47,6 @@ public class Branch extends Inventory {
         return retval;
     }
 
-    public void printInventory(){
-        System.out.println("Inventory for Branch" + name + ":" );
-        for (Product product : items){
-            System.out.println("Product : " + product.getName() + "Quantity : " + product.getQuantity());
-        }
-    }
 
     public void subscribeWarehouse(Warehouse warehouse){
         warehouses.add(warehouse);
