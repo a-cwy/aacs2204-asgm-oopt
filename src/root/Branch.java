@@ -58,13 +58,6 @@ public class Branch extends Inventory {
         warehouses.add(warehouse);
     }
 
-    public Warehouse getWarehouseByIndex(int index) {
-        if (index >=0 && index < warehouses.size()) { //.size() = how many element
-            return warehouses.get(index);
-        } else{
-            throw new IndexOutOfBoundsException("Invalid Warehouse index"); // invalid index
-        }
-    }
 
     public Warehouse findWarehousesById(String id){
         for (Warehouse warehouse : warehouses){
