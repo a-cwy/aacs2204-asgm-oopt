@@ -9,7 +9,7 @@ abstract class  Inventory {
 
     protected Inventory(){
         this.items = new ArrayList<>();
-        this.log = null;
+        this.log = new TransactionLog();
     }
     protected Inventory(Product[] prod, String id){
         this.items = new ArrayList<>(Arrays.asList(prod));

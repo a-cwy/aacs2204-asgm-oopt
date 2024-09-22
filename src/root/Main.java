@@ -1061,8 +1061,8 @@ public class Main {
                         case 'B':
                         {
                             try {
-                                br.getLog().append(newTran);
-                                FileHandler.writeObjectToFile(br, Main.dirs.get("suppliers") + buyerID + ".json");
+                            br.getLog().append(newTran);
+                                FileHandler.writeObjectToFile(br, Main.dirs.get("branches") + buyerID + ".json");
                             } catch (JsonProcessingException _) {}
                             break;
                         }
