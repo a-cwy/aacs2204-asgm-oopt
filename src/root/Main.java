@@ -1723,7 +1723,7 @@ public class Main {
             System.out.print("Enter new product name: ");
             String name = sc.nextLine();
 
-            double price =0;
+            double price;
             while(true){
                 try {
                     System.out.print("Enter new product price: RM");
@@ -1738,7 +1738,7 @@ public class Main {
                 }
             }
 
-            int quantity=0;
+            int quantity;
             while(true){
                 try {
                     System.out.print("Enter new product quantity: ");
@@ -2120,7 +2120,7 @@ public class Main {
                         break;
                     }
                     temp.setState(state);
-                    int postalCode =0;
+                    int postalCode;
                     // enter new postal code and validate
                     while(true){
                         System.out.print("Enter new Postal Code: ");
