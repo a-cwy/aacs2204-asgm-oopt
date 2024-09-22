@@ -229,8 +229,8 @@ public class Main {
                     Branch br = new Branch();
                     try{
                         br = FileHandler.readObjectFromFile(br, Main.dirs.get("branches") + branchID + ".json");
-                    } catch (JsonProcessingException e) {
-                        e.printStackTrace();
+                    } catch (JsonProcessingException _) {
+
                     }
 
                     if (br.getId() == null) {
@@ -494,7 +494,7 @@ public class Main {
                     System.out.print("Enter product name > ");
                     String name = sc.nextLine();
 
-                    double price =0;
+                    double price;
                     while(true){
                         try {
                             System.out.print("Enter product price > RM");
@@ -510,7 +510,7 @@ public class Main {
                     }
 
 
-                    int quantity=0;
+                    int quantity;
                     while(true){
                         try{
                             System.out.println("Enter product quantity > ");
@@ -741,7 +741,7 @@ public class Main {
                     String name = sc.nextLine();
 
 
-                    double price = 0;
+                    double price;
                     while(true){
                         try{
                             System.out.print("Enter product price > RM");
@@ -758,7 +758,7 @@ public class Main {
                         }
                     }
 
-                    int quantity=0;
+                    int quantity;
                     while(true){
                         try{
                             System.out.println("Enter quantity > ");
@@ -959,7 +959,7 @@ public class Main {
                         String name = sc.nextLine();
 
 
-                        double price =0;
+                        double price;
                         while(true){
                             System.out.print("Enter product price > RM");
                             try{
@@ -974,7 +974,7 @@ public class Main {
                             }
                         }
 
-                        int quantity = 0;
+                        int quantity;
                         while(true){
                             System.out.println("Enter quantity > ");
                             try{
@@ -1388,7 +1388,7 @@ public class Main {
                         break;
                     }
                     temp.setState(state);
-                    int postalCode =0;
+                    int postalCode;
                     // enter new postal code and validate
                     while(true){
                         System.out.print("Enter new Postal Code: ");
@@ -1448,7 +1448,7 @@ public class Main {
                 case 2: // EDIT PRICE
                 {
 
-                    double price=0 ;
+                    double price;
                     while(true){
                         System.out.println("Enter new product price > ");
                         try{
@@ -1664,10 +1664,17 @@ public class Main {
 
                         try{
                             postalCode = Integer.parseInt(sc.nextLine());
+                            if(postalCode<=0 || postalCode> 99999){
+                                System.out.println("Invalid postal code");
+                                continue;
+                            }
 
+                            break;
                         }catch(Exception e){
                             System.out.println("Not a valid postal code.");
                         }
+                        newAddress.setPostalCode(postalCode);
+
                         break;
                     }
                     if (postalCode <= 0 || postalCode > 999999) {
