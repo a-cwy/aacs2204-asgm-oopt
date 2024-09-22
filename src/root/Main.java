@@ -1179,7 +1179,7 @@ public class Main {
                                     case 'B':
                                     {
                                         try {
-                                            brS = FileHandler.readObjectFromFile(brS, Main.dirs.get("suppliers") + tran.getSellerID() + ".json");
+                                            brS = FileHandler.readObjectFromFile(brS, Main.dirs.get("branches") + tran.getSellerID() + ".json");
 
                                             for (Product item : tran.getItems()) {
                                                 brS.getProductByName(item.getName()).reduceQuantity(item.getQuantity());
@@ -1196,7 +1196,7 @@ public class Main {
                                                 }
                                             }
 
-                                            FileHandler.writeObjectToFile(brS, Main.dirs.get("suppliers") + tran.getSellerID() + ".json");
+                                            FileHandler.writeObjectToFile(brS, Main.dirs.get("branches") + tran.getSellerID() + ".json");
                                         } catch (JsonProcessingException _) {}
                                         break;
                                     }
