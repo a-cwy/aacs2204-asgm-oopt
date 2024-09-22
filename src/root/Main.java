@@ -378,7 +378,7 @@ public class Main {
                         break;
                     }
                     warehouseAddress.setPostalCode(postalCode);
-
+                    sc.nextLine(); //consume buffer
                     // check to confirm to save
                     String confirm;
                     System.out.println("\nPlease confirm the new Warehouse details:");
@@ -494,13 +494,36 @@ public class Main {
                     System.out.print("Enter product name > ");
                     String name = sc.nextLine();
 
-                    System.out.print("Enter product price > RM");
-                    double price = sc.nextDouble();
-                    sc.nextLine();
+                    double price =0;
+                    while(true){
+                        try {
+                            System.out.print("Enter product price > RM");
+                            price = Double.parseDouble(sc.nextLine());
+                            if(price<=0){
+                                System.out.println("Not a valid product price!");
+                                continue;
+                            }
+                            break;
+                        }catch(Exception e){
+                            System.out.println("Not a valid price value.");
+                        }
+                    }
 
-                    System.out.print("Enter quantity > ");
-                    int quantity = sc.nextInt();
-                    sc.nextLine();
+
+                    int quantity=0;
+                    while(true){
+                        try{
+                            System.out.println("Enter product quantity > ");
+                            quantity = Integer.parseInt(sc.nextLine());
+                            if(quantity<0){
+                                System.out.println("Not a valid product quantity!");
+                                continue;
+                            }
+                            break;
+                        }catch(Exception e){
+                            System.out.println("Not a valid quantity value.");
+                        }
+                    }
 
                     sup.addProduct(new Product(name, price, quantity));
 
@@ -528,7 +551,7 @@ public class Main {
                 }
                 case 6: // REMOVE PRODUCT
                 {
-                    System.out.print("Enter product name > ");
+                    System.out.print("Enter product name to be removed > ");
                     String name = sc.nextLine();
                     if (sup.getProductByName(name) == null){
                         System.out.println("Product does not exist");
@@ -614,26 +637,7 @@ public class Main {
                 }
                 case 3: // DISPLAY PRODUCTS
                 {
-                    // check if product is null
-                    if (war.getItems().isEmpty()) {
-                        System.out.println("No products available in the warehouse!");
-                        break;
-                    }
-
-                    // table header
-                    System.out.printf("%-30s %-15s %-10s %-15s\n", "Product Name", "Price (RM)", "Quantity", "Total Value (RM)");
-                    System.out.println("--------------------------------------------------------------------------");
-
-                    // print products
-                    for (Product product : war.getItems()) {
-                        System.out.printf("%-30s RM%-13.2f %-10d RM%-13.2f\n",
-                                product.getName(),
-                                product.getPrice(),
-                                product.getQuantity(),
-                                product.totalValue());
-                    }
-
-                    System.out.println();
+                    war.printInventory(war);
                     break;
                 }
                 case 4: // ADD PRODUCT
@@ -728,19 +732,7 @@ public class Main {
                 }
                 case 3: // DISPLAY PRODUCTS
                 {
-                    // print products
-                    System.out.printf("%-30s %-15s %-10s %-15s\n", "Product Name", "Price (RM)", "Quantity", "Total Value (RM)");
-                    System.out.println("--------------------------------------------------------------------------");
-
-                    for (Product product : br.getItems()) {
-                        System.out.printf("%-30s RM%-13.2f %-10d RM%-13.2f\n",
-                                product.getName(),
-                                product.getPrice(),
-                                product.getQuantity(),
-                                product.totalValue());
-                    }
-
-                    System.out.println(); // Add an empty line
+                    br.printInventory(br);
                     break;
                 }
                 case 4: // ADD PRODUCT
@@ -748,20 +740,45 @@ public class Main {
                     System.out.print("Enter product name > ");
                     String name = sc.nextLine();
 
-                    System.out.print("Enter product price > RM");
-                    double price = sc.nextDouble();
-                    sc.nextLine();
 
-                    System.out.print("Enter quantity > ");
-                    int quantity = sc.nextInt();
-                    sc.nextLine();
+                    double price = 0;
+                    while(true){
+                        try{
+                            System.out.print("Enter product price > RM");
+                            price = Double.parseDouble(sc.nextLine());
+                            if(price<=0){
+                                System.out.println("Invalid price");
+                                continue;
+                            }
+                            break;
+
+                        }catch(Exception e){
+                            System.out.println("Invalid price");
+
+                        }
+                    }
+
+                    int quantity=0;
+                    while(true){
+                        try{
+                            System.out.println("Enter quantity > ");
+                            quantity = Integer.parseInt(sc.nextLine());
+                            if(quantity<0){
+                                System.out.println("Invalid quantity");
+                                continue;
+                            }
+                            break;
+                        }catch(Exception e){
+                            System.out.println("Invalid quantity");
+                        }
+                    }
 
                     br.addProduct(new Product(name, price, quantity));
 
                     try {
                         FileHandler.writeObjectToFile(br, Main.dirs.get("branches") + br.getId() + ".json");
                     } catch (JsonProcessingException _) {}
-                    //TODO
+
                     break;
                 }
                 case 5: // EDIT PRODUCT
@@ -784,14 +801,36 @@ public class Main {
                 }
                 case 6: // REMOVE PRODUCT
                 {
-                    System.out.println("Enter product name to remove:");
-                    String prodName = sc.nextLine();
+                    System.out.print("Enter product name to be removed > ");
+                    String name = sc.nextLine();
+                    if (br.getProductByName(name) == null){
+                        System.out.println("Product does not exist");
+                        break;
+                    }
+                    System.out.println("Product name: "+ br.getProductByName(name).getName());
+                    System.out.println("Product price: "+ br.getProductByName(name).getPrice());
+                    System.out.println("Product quantity: "+ br.getProductByName(name).getQuantity());
+                    System.out.println("Are you sure to remove this product? ");
+                    System.out.println("(Y/N)");
+                    char answer;
 
-                    br.removeProductByName(prodName);
-
-                    System.out.println(prodName + " removed successfully. ");
-
-                    //TODO
+                    while(true){
+                        answer = sc.nextLine().charAt(0);
+                        answer = Character.toUpperCase(answer);
+                        if (answer == 'Y') {
+                            br.removeProductByName(name);
+                            try {
+                                FileHandler.writeObjectToFile(br, Main.dirs.get("branches") + br.getId() + ".json");
+                            } catch (JsonProcessingException _) {}
+                            break;
+                        } else if (answer == 'N') {
+                            System.out.println("Remove aborted");
+                            break;
+                        }
+                        else{
+                            System.out.println("Invalid choice");
+                        }
+                    }
                     break;
                 }
                 case 7: // DISPLAY SUBSCRIBED WAREHOUSES
@@ -919,13 +958,37 @@ public class Main {
                         System.out.print("Enter product name > ");
                         String name = sc.nextLine();
 
-                        System.out.print("Enter product price > RM");
-                        double price = sc.nextDouble();
-                        sc.nextLine();
 
-                        System.out.print("Enter quantity > ");
-                        int quantity = sc.nextInt();
-                        sc.nextLine();
+                        double price =0;
+                        while(true){
+                            System.out.print("Enter product price > RM");
+                            try{
+                                price = Double.parseDouble(sc.nextLine());
+                                if(price<=0){
+                                    System.out.println("Invalid price");
+                                    continue;
+                                }
+                                break;
+                            }catch(Exception e){
+                                System.out.println("Invalid price");
+                            }
+                        }
+
+                        int quantity = 0;
+                        while(true){
+                            System.out.println("Enter quantity > ");
+                            try{
+                                quantity = Integer.parseInt(sc.nextLine());
+                                if(quantity<=0){
+                                    System.out.println("Invalid quantity");
+                                    continue;
+                                }
+                                break;
+                            }catch(Exception e){
+                                System.out.println("Invalid quantity");
+                            }
+                        }
+
 
                         boolean possibleTransaction = false;
                         for (Product prod : inv.getItems()) {
@@ -1265,7 +1328,7 @@ public class Main {
                    System.out.println("Current supplier name: " + sup.getName());
                    System.out.print("New supplier name: ");
                    sup.setName(sc.nextLine());
-                   System.out.print("Successfully updated supplier name");
+                   System.out.println("Successfully updated supplier name");
                     try {
                         FileHandler.writeObjectToFile(sup, Main.dirs.get("suppliers") + sup.getId() + ".json");
                     } catch (JsonProcessingException _) {
@@ -1281,23 +1344,68 @@ public class Main {
                     System.out.println("Current supplier address: " + sup.getLocation());
                     System.out.println("New supplier address: ");
 
-                    System.out.print("Enter unit no: ");
-                    temp.setUnit(sc.nextLine());
+                    // enter new unit no and validate
+                    System.out.print("Enter new Unit No: ");
+                    String unitNo = sc.nextLine();
+                    if (unitNo.isEmpty()) {
+                        System.out.println("Unit No cannot be empty.");
+                        break;
+                    }
+                    temp.setUnit(unitNo);
 
-                    System.out.print("Enter building: ");
-                    temp.setBuilding(sc.nextLine());
+                    // enter new building and validate
+                    System.out.print("Enter new Building: ");
+                    String building = sc.nextLine();
+                    if (building.isEmpty()) {
+                        System.out.println("Building name cannot be empty.");
+                        break;
+                    }
+                    temp.setBuilding(building);
 
-                    System.out.print("Enter street: ");
-                    temp.setStreet(sc.nextLine());
+                    // enter new street and validate
+                    System.out.print("Enter new Street: ");
+                    String street = sc.nextLine();
+                    if (street.isEmpty()) {
+                        System.out.println("Street name cannot be empty.");
+                        break;
+                    }
+                    temp.setStreet(street);
 
-                    System.out.print("Enter town: ");
-                    temp.setTown(sc.nextLine());
+                    // enter new town and validate
+                    System.out.print("Enter new Town: ");
+                    String town = sc.nextLine();
+                    if (town.isEmpty()) {
+                        System.out.println("Town name cannot be empty.");
+                        break;
+                    }
+                    temp.setTown(town);
 
-                    System.out.print("Enter state: ");
-                    temp.setState(sc.nextLine());
+                    // enter new state and validate
+                    System.out.print("Enter new State: ");
+                    String state = sc.nextLine();
+                    if (state.isEmpty()) {
+                        System.out.println("State name cannot be empty.");
+                        break;
+                    }
+                    temp.setState(state);
+                    int postalCode =0;
+                    // enter new postal code and validate
+                    while(true){
+                        System.out.print("Enter new Postal Code: ");
+                        try{
+                            postalCode = Integer.parseInt(sc.nextLine());
+                            if (postalCode <= 0 || postalCode > 999999) {
+                                System.out.println("Postal code must be a positive number and less than 6 digits.");
+                                continue;
+                            }
+                            break;
 
-                    System.out.print("Enter postal code: ");
-                    temp.setPostalCode(sc.nextInt());
+                        }catch(Exception e){
+                            System.out.println("Not a valid postal code.");
+                        }
+                    }
+
+                    temp.setPostalCode(postalCode);
 
                     System.out.println("Successfully updated supplier address");
                     sup.setLocation(temp);
@@ -1339,8 +1447,38 @@ public class Main {
                 }
                 case 2: // EDIT PRICE
                 {
-                    System.out.print("New product price: ");
-                    prod.setPrice(sc.nextDouble());
+
+                    double price=0 ;
+                    while(true){
+                        System.out.println("Enter new product price > ");
+                        try{
+                            price = Double.parseDouble(sc.nextLine());
+                            if(price <= 0) {
+                                System.out.println("Invalid price!");
+                                continue;
+                            }
+                            break;
+                        }catch(Exception e){
+                            System.out.println("Not a valid price.");
+                        }
+                    }
+
+                    char answer;
+
+                    while(true) {
+                        System.out.println("Confirm to edit price?(Y/N)");
+                        answer = sc.nextLine().charAt(0);
+                        answer = Character.toUpperCase(answer);
+                        if (answer == 'Y') {
+                            prod.setPrice(price);
+                            break;
+                        } else if (answer == 'N') {
+                            System.out.println("Remove aborted");
+                            break;
+                        } else {
+                            System.out.println("Invalid choice");
+                        }
+                    }
                     break;
                 }
                 case 3: //Edit quantity
@@ -1366,14 +1504,57 @@ public class Main {
                 case 1: //Add quantity
                 {
                     System.out.print("Quantity to add: ");
-                    prod.addQuantity(sc.nextInt());
-
+                    int quantity=0;
+                    try{
+                        quantity = Integer.parseInt(sc.nextLine());
+                    }catch(Exception e){
+                        System.out.println("Not a valid quantity. Press any key to continue.");
+                        sc.nextLine();
+                        Main.clearScreen();
+                    }
+                    char answer;
+                    while(true) {
+                        System.out.println("Confirm to add quantity?(Y/N)");
+                        answer = sc.nextLine().charAt(0);
+                        answer = Character.toUpperCase(answer);
+                        if (answer == 'Y') {
+                            prod.addQuantity(quantity);
+                            break;
+                        } else if (answer == 'N') {
+                            System.out.println("Add quantity reverted");
+                            break;
+                        } else {
+                            System.out.println("Invalid choice");
+                        }
+                    }
                     break;
                 }
                 case 2: // reduce quantity
                 {
                     System.out.print("Quantity to reduce: ");
-                    prod.reduceQuantity(sc.nextInt());
+                    int quantity=0;
+                    try{
+                        quantity = Integer.parseInt(sc.nextLine());
+                    }catch(Exception e){
+                        System.out.println("Not a valid quantity. Press any key to continue.");
+                        sc.nextLine();
+                        Main.clearScreen();
+                    }
+                    char answer;
+                    while(true) {
+                        System.out.println("Confirm to reduce quantity?(Y/N)");
+                        answer = sc.nextLine().charAt(0);
+                        answer = Character.toUpperCase(answer);
+                        if (answer == 'Y') {
+                            prod.reduceQuantity(quantity);
+                            break;
+                        } else if (answer == 'N') {
+                            System.out.println("Reduce quantity reverted");
+                            break;
+                        } else {
+                            System.out.println("Invalid choice");
+                        }
+                    }
                     break;
                 }
 
@@ -1476,10 +1657,19 @@ public class Main {
                         break;
                     }
                     newAddress.setState(state);
-
+                    int postalCode =0;
                     // enter new postal code and validate
-                    System.out.print("Enter new Postal Code: ");
-                    int postalCode = sc.nextInt();
+                    while(true){
+                        System.out.print("Enter new Postal Code: ");
+
+                        try{
+                            postalCode = Integer.parseInt(sc.nextLine());
+
+                        }catch(Exception e){
+                            System.out.println("Not a valid postal code.");
+                        }
+                        break;
+                    }
                     if (postalCode <= 0 || postalCode > 999999) {
                         System.out.println("Postal code must be a positive number and less than 6 digits.");
                         break;
@@ -1526,16 +1716,33 @@ public class Main {
             System.out.print("Enter new product name: ");
             String name = sc.nextLine();
 
-            System.out.print("Enter new product price: RM");
-            double price = sc.nextDouble();
-            sc.nextLine();
+            double price =0;
+            while(true){
+                try {
+                    System.out.print("Enter new product price: RM");
+                    price = Double.parseDouble(sc.nextLine());
+                    if(price<=0){
+                        System.out.println("Not a valid product price!");
+                        continue;
+                    }
+                    break;
+                }catch(Exception e){
+                    System.out.println("Not a valid price value.");
+                }
+            }
 
-            System.out.print("Enter new product quantity: ");
-            int quantity = sc.nextInt();
-            sc.nextLine();
-
+            int quantity=0;
+            while(true){
+                try {
+                    System.out.print("Enter new product quantity: ");
+                    quantity = Integer.parseInt(sc.nextLine());
+                    break;
+                }catch(Exception e){
+                    System.out.println("Not a valid quantity value.");
+                }
+            }
             // validate the inputs
-            if (name.isEmpty() || price <= 0 || quantity <= 0) {
+            if (name.isEmpty()) {
                 System.out.println("Invalid product information!\n");
                 break;
             }
@@ -1859,33 +2066,78 @@ public class Main {
                 case 2: // EDIT LOCATION
                 {
                     Address temp = new Address();
-                    System.out.println("Current branch address: " + br.getLocation());
-                    System.out.println("New branch address: ");
+                    System.out.println("Current supplier address: " + br.getLocation());
+                    System.out.println("New supplier address: ");
 
-                    System.out.print("Enter unit no: ");
-                    temp.setUnit(sc.nextLine());
+                    // enter new unit no and validate
+                    System.out.print("Enter new Unit No: ");
+                    String unitNo = sc.nextLine();
+                    if (unitNo.isEmpty()) {
+                        System.out.println("Unit No cannot be empty.");
+                        break;
+                    }
+                    temp.setUnit(unitNo);
 
-                    System.out.print("Enter building: ");
-                    temp.setBuilding(sc.nextLine());
+                    // enter new building and validate
+                    System.out.print("Enter new Building: ");
+                    String building = sc.nextLine();
+                    if (building.isEmpty()) {
+                        System.out.println("Building name cannot be empty.");
+                        break;
+                    }
+                    temp.setBuilding(building);
 
-                    System.out.print("Enter street: ");
-                    temp.setStreet(sc.nextLine());
+                    // enter new street and validate
+                    System.out.print("Enter new Street: ");
+                    String street = sc.nextLine();
+                    if (street.isEmpty()) {
+                        System.out.println("Street name cannot be empty.");
+                        break;
+                    }
+                    temp.setStreet(street);
 
-                    System.out.print("Enter town: ");
-                    temp.setTown(sc.nextLine());
+                    // enter new town and validate
+                    System.out.print("Enter new Town: ");
+                    String town = sc.nextLine();
+                    if (town.isEmpty()) {
+                        System.out.println("Town name cannot be empty.");
+                        break;
+                    }
+                    temp.setTown(town);
 
-                    System.out.print("Enter state: ");
-                    temp.setState(sc.nextLine());
+                    // enter new state and validate
+                    System.out.print("Enter new State: ");
+                    String state = sc.nextLine();
+                    if (state.isEmpty()) {
+                        System.out.println("State name cannot be empty.");
+                        break;
+                    }
+                    temp.setState(state);
+                    int postalCode =0;
+                    // enter new postal code and validate
+                    while(true){
+                        System.out.print("Enter new Postal Code: ");
+                        try{
+                            postalCode = Integer.parseInt(sc.nextLine());
+                            if (postalCode <= 0 || postalCode > 999999) {
+                                System.out.println("Postal code must be a positive number and less than 6 digits.");
+                                continue;
+                            }
+                            break;
 
-                    System.out.print("Enter postal code: ");
-                    temp.setPostalCode(sc.nextInt());
+                        }catch(Exception e){
+                            System.out.println("Not a valid postal code.");
+                        }
+                    }
 
-                    System.out.println("Successfully updated branch address");
+                    temp.setPostalCode(postalCode);
+
+                    System.out.println("Successfully updated supplier address");
                     br.setLocation(temp);
                     try {
                         FileHandler.writeObjectToFile(br, Main.dirs.get("branches") + br.getId() + ".json");
                     } catch (JsonProcessingException _) {
-                        System.out.println("Failed to update branch (Couldn't save branch as file).");
+                        System.out.println("Failed to edit account (Couldn't save account as file).");
                         break;
                     }
 

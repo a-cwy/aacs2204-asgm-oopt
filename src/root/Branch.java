@@ -98,6 +98,16 @@ public class Branch extends Inventory {
         throw new IllegalArgumentException("Invalid Warehouse name");
     }
 
+    public void printInventory(Branch branch){
+        Main.clearScreen();
+        System.out.println("Inventory of branch " + branch.getId());
+        System.out.printf("%-2s %-30s %-15s %-10s %-15s\n"," ", "Product Name", "Price (RM)", "Quantity", "Total Value (RM)");
+        System.out.println("--------------------------------------------------------------------------");
+
+        super.printInventory();
+
+    }
+
 //    public void addProduct(Product product,int amt){
 //        product.addQuantity(amt);}
 //

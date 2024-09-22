@@ -83,6 +83,15 @@ public class Warehouse extends Inventory{
                 return null;
         }
 
+        public void printInventory(Warehouse war){
+                Main.clearScreen();
+                System.out.println("Inventory of warehouse " + war.getId());
+                System.out.printf("%-2s %-30s %-15s %-10s %-15s\n"," ", "Product Name", "Price (RM)", "Quantity", "Total Value (RM)");
+                System.out.println("--------------------------------------------------------------------------");
+
+                super.printInventory();
+
+        }
 
         @Override
         public String toString() {

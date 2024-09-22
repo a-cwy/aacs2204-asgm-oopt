@@ -52,7 +52,9 @@ public class Supplier extends Inventory {
     public void printInventory(Supplier sup){
         Main.clearScreen();
         System.out.println("Inventory of supplier " + sup.getId());
-        System.out.printf("%2s %-20s %-10s %-10s\n", "","Name", "Price", "Quantity");
+        System.out.printf("%-2s %-30s %-15s %-10s %-15s\n"," ", "Product Name", "Price (RM)", "Quantity", "Total Value (RM)");
+        System.out.println("--------------------------------------------------------------------------");
+
         super.printInventory();
 
     }
