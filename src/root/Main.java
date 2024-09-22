@@ -761,7 +761,7 @@ public class Main {
                     int quantity;
                     while(true){
                         try{
-                            System.out.println("Enter quantity > ");
+                            System.out.print("Enter quantity > ");
                             quantity = Integer.parseInt(sc.nextLine());
                             if(quantity<0){
                                 System.out.println("Invalid quantity");
@@ -836,7 +836,7 @@ public class Main {
                 case 7: // DISPLAY SUBSCRIBED WAREHOUSES
                 {
                     if (br.getWarehouses().isEmpty()) {
-                        System.out.println("No subscribed suppliers!");
+                        System.out.println("No subscribed warehouse!");
                         break;
                     }
 
