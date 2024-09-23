@@ -1155,7 +1155,7 @@ public class Main {
                                     case 'W':
                                     {
                                         try {
-                                            warS = FileHandler.readObjectFromFile(warS, Main.dirs.get("suppliers") + tran.getSellerID() + ".json");
+                                            warS = FileHandler.readObjectFromFile(warS, Main.dirs.get("warehouses") + tran.getSellerID() + ".json");
 
                                             for (Product item : tran.getItems()) {
                                                 warS.getProductByName(item.getName()).reduceQuantity(item.getQuantity());
@@ -1172,7 +1172,7 @@ public class Main {
                                                 }
                                             }
 
-                                            FileHandler.writeObjectToFile(warS, Main.dirs.get("suppliers") + tran.getSellerID() + ".json");
+                                            FileHandler.writeObjectToFile(warS, Main.dirs.get("warehouses") + tran.getSellerID() + ".json");
                                         } catch (JsonProcessingException _) {}
                                         break;
                                     }
